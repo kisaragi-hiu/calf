@@ -243,7 +243,7 @@ void calf_led_set_value(CalfLed *led, float value)
         if (led->led_mode >= 2 || (old_value > 0) != (value > 0))
         {
             GtkWidget *widget = GTK_WIDGET (led);
-            if (GTK_WIDGET_REALIZED(widget))
+            if (gtk_widget_get_realized(widget))
                 gtk_widget_queue_draw (widget);
         }
     }

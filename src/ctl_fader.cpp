@@ -288,11 +288,11 @@ calf_fader_init (CalfFader *self)
     widget->requisition.width = 40;
     widget->requisition.height = 40;
     
-    gtk_signal_connect(GTK_OBJECT(widget), "motion-notify-event", GTK_SIGNAL_FUNC (calf_fader_motion), NULL);
-    gtk_signal_connect(GTK_OBJECT(widget), "enter-notify-event", GTK_SIGNAL_FUNC (calf_fader_enter), NULL);
-    gtk_signal_connect(GTK_OBJECT(widget), "leave-notify-event", GTK_SIGNAL_FUNC (calf_fader_leave), NULL);
-    gtk_signal_connect(GTK_OBJECT(widget), "size-allocate", GTK_SIGNAL_FUNC (calf_fader_allocate), NULL);
-    gtk_signal_connect(GTK_OBJECT(widget), "size-request", GTK_SIGNAL_FUNC (calf_fader_request), NULL);
+    g_signal_connect(GTK_OBJECT(widget), "motion-notify-event", G_CALLBACK (calf_fader_motion), NULL);
+    g_signal_connect(GTK_OBJECT(widget), "enter-notify-event", G_CALLBACK (calf_fader_enter), NULL);
+    g_signal_connect(GTK_OBJECT(widget), "leave-notify-event", G_CALLBACK (calf_fader_leave), NULL);
+    g_signal_connect(GTK_OBJECT(widget), "size-allocate", G_CALLBACK (calf_fader_allocate), NULL);
+    g_signal_connect(GTK_OBJECT(widget), "size-request", G_CALLBACK (calf_fader_request), NULL);
 }
 
 GType

@@ -434,7 +434,7 @@ calf_knob_button_release (GtkWidget *widget, GdkEventButton *event)
 {
     g_assert(CALF_IS_KNOB(widget));
 
-    if (GTK_WIDGET_HAS_GRAB(widget))
+    if (gtk_widget_has_grab(widget))
         gtk_grab_remove(widget);
     gtk_widget_set_state(widget, GTK_STATE_NORMAL);
     gtk_widget_queue_draw(widget);
@@ -476,7 +476,7 @@ calf_knob_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
     float scale = (event->state & GDK_SHIFT_MASK) ? 2500 : 250;
     gboolean moved = FALSE;
     
-    if (GTK_WIDGET_HAS_GRAB(widget)) 
+    if (gtk_widget_has_grab(widget)) 
     {
         if (self->type == 3)
         {
@@ -547,7 +547,7 @@ static void
 calf_knob_init (CalfKnob *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(self), GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
     widget->requisition.width = 40;
     widget->requisition.height = 40;
     self->knob_image = NULL;

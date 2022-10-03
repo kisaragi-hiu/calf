@@ -101,7 +101,7 @@ static void
 calf_toggle_init (CalfToggle *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(self), GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
     widget->requisition.width = 30;
     widget->requisition.height = 20;
     self->size = 1;

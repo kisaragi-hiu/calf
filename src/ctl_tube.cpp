@@ -249,7 +249,7 @@ static void
 calf_tube_init (CalfTube *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(self), GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
     switch(self->direction) {
         case 1:
             switch(self->size) {

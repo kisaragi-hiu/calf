@@ -99,9 +99,9 @@ LV2_ENABLED=$LV2_FOUND
 LASH_ENABLED=$LASH_FOUND
 
 if test "$JACK_FOUND" = "yes" -o "$LV2_FOUND" = "yes"; then
-  PKG_CHECK_MODULES(GUI_DEPS, gtk+-2.0 >= 2.12.0 cairo >= 1.2.0,
+  PKG_CHECK_MODULES(GUI_DEPS, gtk+-2.0 >= 2.24.0 cairo >= 1.2.0,
     GUI_ENABLED="yes",
-    GUI_ENABLED="no (GTK+ 2.12 and cairo 1.2 or newer required)"
+    GUI_ENABLED="no (GTK+ 2.24 and cairo 1.2 or newer required)"
   )
 fi
 

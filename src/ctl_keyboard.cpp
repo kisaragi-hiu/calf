@@ -122,7 +122,7 @@ calf_keyboard_expose (GtkWidget *widget, GdkEventExpose *event)
 static void
 calf_keyboard_realize(GtkWidget *widget)
 {
-    GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
+    gtk_widget_set_realized(widget, TRUE);
 
     GdkWindowAttr attributes;
     attributes.event_mask = GDK_EXPOSURE_MASK | GDK_BUTTON1_MOTION_MASK | 
@@ -161,7 +161,7 @@ calf_keyboard_size_allocate (GtkWidget *widget,
     widget->allocation = *allocation;
     widget->allocation.width = widget->requisition.width;
     
-    if (GTK_WIDGET_REALIZED(widget))
+    if (gtk_widget_get_realized(widget))
         gdk_window_move_resize(widget->window, 
             allocation->x + (allocation->width - widget->allocation.width) / 2, allocation->y, 
             widget->allocation.width, allocation->height );
@@ -263,7 +263,7 @@ calf_keyboard_init (CalfKeyboard *self)
     static CalfKeyboard::EventAdapter default_sink;
     GtkWidget *widget = GTK_WIDGET(self);
     g_assert(CALF_IS_KEYBOARD(widget));
-    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(self), GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(widget, TRUE);
     self->nkeys = 7 * 3 + 1;
     self->sink = &default_sink;
     self->last_key = -1;

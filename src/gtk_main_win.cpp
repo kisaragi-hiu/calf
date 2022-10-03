@@ -444,7 +444,7 @@ plugin_strip *gtk_main_window::create_strip(jack_host *plugin)
     GtkWidget *ebox = gtk_event_box_new ();
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(ebox), FALSE);
     gtk_widget_set_events(ebox, GDK_BUTTON_PRESS_MASK);
-    gtk_signal_connect(GTK_OBJECT(ebox), "button_press_event", GTK_SIGNAL_FUNC(on_edit_title), strip);
+    g_signal_connect(GTK_OBJECT(ebox), "button_press_event", G_CALLBACK(on_edit_title), strip);
     
     gtk_container_add(GTK_CONTAINER(align), strip->name);
     gtk_container_add(GTK_CONTAINER(ebox), align);
@@ -457,8 +457,8 @@ plugin_strip *gtk_main_window::create_strip(jack_host *plugin)
     gtk_widget_set_size_request(strip->entry, 180, -1);
     gtk_table_attach(GTK_TABLE(strip->strip_table), strip->entry, 2, 3, 1, 2, (GtkAttachOptions)0, ao, 10, 0);
     gtk_widget_show_all(strip->entry);
-    gtk_signal_connect(GTK_OBJECT(strip->entry), "activate", GTK_SIGNAL_FUNC(on_activate_entry), strip);
-    gtk_signal_connect(GTK_OBJECT(strip->entry), "focus-out-event", GTK_SIGNAL_FUNC(on_blur_entry), strip);
+    g_signal_connect(GTK_OBJECT(strip->entry), "activate", G_CALLBACK(on_activate_entry), strip);
+    g_signal_connect(GTK_OBJECT(strip->entry), "focus-out-event", G_CALLBACK(on_blur_entry), strip);
     gtk_widget_hide(strip->entry);
     
     // open button
@@ -890,7 +890,7 @@ void gtk_main_window::create()
     gtk_container_add(GTK_CONTAINER(all_vbox), evbox);
     gtk_container_add(GTK_CONTAINER(toplevel), all_vbox);
     
-    gtk_signal_connect(GTK_OBJECT(evbox), "button-press-event", GTK_SIGNAL_FUNC(on_table_clicked), NULL);
+    g_signal_connect(GTK_OBJECT(evbox), "button-press-event", G_CALLBACK(on_table_clicked), NULL);
     gtk_widget_set_can_focus(evbox, TRUE);
     
     gtk_widget_set_name(GTK_WIDGET(strips_table), "Calf-Container");
@@ -926,10 +926,10 @@ void gtk_main_window::create_status_icon()
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), exit);
     gtk_widget_show_all (menu);
     
-    gtk_status_icon_set_tooltip (icon, "Calf Studio Gear");
+    gtk_status_icon_set_tooltip_text (icon, "Calf Studio Gear");
     
-    g_signal_connect(GTK_STATUS_ICON (icon), "activate", GTK_SIGNAL_FUNC (tray_activate_cb), this);
-    g_signal_connect(GTK_STATUS_ICON (icon), "popup-menu", GTK_SIGNAL_FUNC (tray_popup_cb), menu);
+    g_signal_connect(GTK_STATUS_ICON (icon), "activate", G_CALLBACK (tray_activate_cb), this);
+    g_signal_connect(GTK_STATUS_ICON (icon), "popup-menu", G_CALLBACK (tray_popup_cb), menu);
 }
 
 void gtk_main_window::on_config_change()

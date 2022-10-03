@@ -333,7 +333,7 @@ calf_pattern_button_release (GtkWidget *widget, GdkEventButton *event)
         p->handle_hovered.beat = hh.beat;
     }
         
-    if (GTK_WIDGET_HAS_GRAB(widget))
+    if (gtk_widget_has_grab(widget))
         gtk_grab_remove(widget);
         
     gtk_widget_queue_draw(widget);
@@ -450,8 +450,10 @@ static void
 calf_pattern_init (CalfPattern *p)
 {
     GtkWidget *widget = GTK_WIDGET(p);
-    
-    GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS | GTK_SENSITIVE | GTK_PARENT_SENSITIVE);
+    gtk_widget_set_can_focus(widget, TRUE);
+    gtk_widget_set_sensitive(widget, TRUE);
+    gtk_widget_set_sensitive(gtk_widget_get_parent(widget), TRUE);
+    // GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS | GTK_SENSITIVE | GTK_PARENT_SENSITIVE);
     gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
     
     widget->requisition.width  = 300;

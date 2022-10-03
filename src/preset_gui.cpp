@@ -67,17 +67,17 @@ void gui_preset_access::store_preset()
     GtkWidget *preset_name_combo = GTK_WIDGET(gtk_builder_get_object(store_preset_builder, "preset_name"));
     GtkTreeModel *model = GTK_TREE_MODEL(gtk_list_store_new(1, G_TYPE_STRING));
     gtk_combo_box_set_model(GTK_COMBO_BOX(preset_name_combo), model);
-    gtk_combo_box_entry_set_text_column(GTK_COMBO_BOX_ENTRY(preset_name_combo), 0);
+    gtk_combo_box_set_entry_text_column(GTK_COMBO_BOX(preset_name_combo), 0);
     for(preset_vector::const_iterator i = get_user_presets().presets.begin(); i != get_user_presets().presets.end(); ++i)
     {
         if (i->plugin != gui->effect_name)
             continue;
-        gtk_combo_box_append_text(GTK_COMBO_BOX(preset_name_combo), i->name.c_str());
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(preset_name_combo), i->name.c_str());
     }
     int response = gtk_dialog_run(GTK_DIALOG(store_preset_dlg));
 
     plugin_preset sp;
-    sp.name = gtk_combo_box_get_active_text(GTK_COMBO_BOX(preset_name_combo));
+    sp.name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(preset_name_combo));
     sp.bank = 0;
     sp.program = 0;
     sp.plugin = gui->effect_name;

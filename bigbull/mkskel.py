@@ -62,7 +62,7 @@ static gboolean
 static void
 [preftype]_realize(GtkWidget *widget)
 {
-    GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
+    gtk_widget_set_realized(widget, TRUE);
 
     GdkWindowAttr attributes;
     attributes.event_mask = GDK_EXPOSURE_MASK | GDK_BUTTON1_MOTION_MASK | 
@@ -100,7 +100,7 @@ static void
     
     widget->allocation = *allocation;
     
-    if (GTK_WIDGET_REALIZED(widget))
+    if (gtk_widget_get_realized(widget))
         gdk_window_move_resize(widget->window, allocation->x, allocation->y, allocation->width, allocation->height );
 }
 
@@ -123,7 +123,7 @@ static void
 [preftype]_init ([PrefType] *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(self), GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
 }
 
 GType

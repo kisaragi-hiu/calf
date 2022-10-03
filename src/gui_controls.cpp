@@ -809,7 +809,7 @@ void spin_param_control::value_changed(GtkSpinButton *widget, gpointer value)
 void spin_param_control::get()
 {
     // const parameter_properties &props = get_props();
-    gui->set_param_value(param_no, gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (widget)), this);
+    gui->set_param_value(param_no, gtk_spin_button_get_value (GTK_SPIN_BUTTON (widget)), this);
 }
 
 void spin_param_control::set()
@@ -1019,8 +1019,8 @@ gboolean tap_button_param_control::tap_button_pressed(GtkWidget *widget, GdkEven
         }
         ctl->last_time = time;
         if (ctl->timer)
-            gtk_timeout_remove(ctl->timer);
-        ctl->timer = gtk_timeout_add(2000, (GtkFunction)tap_button_stop_waiting, (gpointer)ctl);
+            g_source_remove(ctl->timer);
+        ctl->timer = g_timeout_add(2000, (GSourceFunc)tap_button_stop_waiting, (gpointer)ctl);
         gtk_widget_queue_draw(widget);
     }
     return FALSE;
@@ -1033,7 +1033,7 @@ void tap_button_param_control::tap_button_stop_waiting(gpointer data)
         ctl->last_time = 0;
         CALF_TAP_BUTTON(ctl->widget)->state = 0;
         gtk_widget_queue_draw(ctl->widget);
-        gtk_timeout_remove(ctl->timer);
+        g_source_remove(ctl->timer);
         ctl->timer = 0;
         gtk_widget_queue_draw(ctl->widget);
     }
@@ -1360,7 +1360,7 @@ void line_graph_param_control::get()
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
     CalfLineGraph *clg = CALF_LINE_GRAPH(widget);
 
-    if (tw && GTK_WIDGET_TOPLEVEL(tw) && widget->window)
+    if (tw && gtk_widget_is_toplevel(tw) && widget->window)
     {
         int ws = gdk_window_get_state(widget->window);
         if (ws & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED))
@@ -1392,7 +1392,7 @@ void line_graph_param_control::set()
     _GUARD_CHANGE_
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
     CalfLineGraph *clg = CALF_LINE_GRAPH(widget);
-    if (tw && GTK_WIDGET_TOPLEVEL(tw) && widget->window)
+    if (tw && gtk_widget_is_toplevel(tw) && widget->window)
     {
         bool force = false;
         int ws = gdk_window_get_state(widget->window);
@@ -1502,7 +1502,7 @@ void phase_graph_param_control::set()
 {
     _GUARD_CHANGE_
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
-    if (tw && GTK_WIDGET_TOPLEVEL(tw) && widget->window) {
+    if (tw && gtk_widget_is_toplevel(tw) && widget->window) {
         gtk_widget_queue_draw(widget);
     }
 }
@@ -1545,7 +1545,7 @@ void tuner_param_control::set()
     CalfTuner *tuner = CALF_TUNER(widget);
     tuner->note = gui->plugin->get_param_value(param_no);
     tuner->cents = gui->plugin->get_param_value(cents_no);
-    if (tw && GTK_WIDGET_TOPLEVEL(tw) && widget->window) {
+    if (tw && gtk_widget_is_toplevel(tw) && widget->window) {
         gtk_widget_queue_draw(widget);
     }
 }

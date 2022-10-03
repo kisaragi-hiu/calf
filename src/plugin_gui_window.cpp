@@ -182,7 +182,7 @@ void plugin_gui_window::about_action(GtkAction *action, plugin_gui_window *gui_w
     ;
     
     string label = gui_win->gui->plugin->get_metadata_iface()->get_label();
-    gtk_about_dialog_set_name(dlg, ("About Calf " + label).c_str());
+    // gtk_about_dialog_set_name(dlg, ("About Calf " + label).c_str());
     gtk_about_dialog_set_program_name(dlg, ("Calf " + label).c_str());
     gtk_about_dialog_set_version(dlg, PACKAGE_VERSION);
     gtk_about_dialog_set_website(dlg, "http://calf.sourceforge.net/");

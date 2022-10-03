@@ -84,7 +84,7 @@ calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
 static void
 calf_curve_realize(GtkWidget *widget)
 {
-    GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
+    gtk_widget_set_realized(widget, TRUE);
 
     GdkWindowAttr attributes;
     attributes.event_mask = GDK_EXPOSURE_MASK | GDK_BUTTON1_MOTION_MASK | 
@@ -122,7 +122,7 @@ calf_curve_size_allocate (GtkWidget *widget,
     
     widget->allocation = *allocation;
     
-    if (GTK_WIDGET_REALIZED(widget))
+    if (gtk_widget_get_realized(widget))
         gdk_window_move_resize(widget->window, allocation->x, allocation->y, allocation->width, allocation->height );
 }
 
@@ -269,7 +269,7 @@ static void
 calf_curve_init (CalfCurve *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
+    gtk_widget_set_can_focus(widget, TRUE);
     self->points = new CalfCurve::point_vector;
     // XXXKF: destructor
     self->points->push_back(CalfCurve::point(0.f, 1.f));
