@@ -32,20 +32,22 @@ static gboolean
 calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
 {
     g_assert(CALF_IS_TOGGLE(widget));
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     CalfToggle *self = CALF_TOGGLE(widget);
     if (!self->toggle_image)
         return FALSE;
     float off = floor(.5 + gtk_range_get_value(GTK_RANGE(widget)));
     float pw  = gdk_pixbuf_get_width(self->toggle_image);
     float ph  = gdk_pixbuf_get_height(self->toggle_image);
-    float wcx = widget->allocation.x + widget->allocation.width / 2;
-    float wcy = widget->allocation.y + widget->allocation.height / 2;
+    float wcx = allocation.x + allocation.width / 2;
+    float wcy = allocation.y + allocation.height / 2;
     float pcx = pw / 2;
     float pcy = ph / 4;
     float sy = off * ph / 2;
     float x = wcx - pcx;
     float y = wcy - pcy;
-    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
     gdk_cairo_set_source_pixbuf (cr, self->toggle_image, x, y - sy);
     cairo_paint (cr);
     cairo_destroy (cr);

@@ -33,21 +33,25 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_TUBE(widget));
     
     CalfTube  *self   = CALF_TUBE(widget);
-    GdkWindow *window = widget->window;
+    GdkWindow *window = gtk_widget_get_window(widget);
     GtkStyle  *style  = gtk_widget_get_style(widget);
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     
     int ox = 4, oy = 4, inner = 1, pad;
-    int sx = widget->allocation.width - (ox * 2), sy = widget->allocation.height - (oy * 2);
+    int sx = allocation.width - (ox * 2), sy = allocation.height - (oy * 2);
     
     if( self->cache_surface == NULL ) {
         // looks like its either first call or the widget has been resized.
         // create the cache_surface.
         cairo_surface_t *window_surface = cairo_get_target( c );
-        self->cache_surface = cairo_surface_create_similar( window_surface, 
-                                  CAIRO_CONTENT_COLOR,
-                                  widget->allocation.width,
-                                  widget->allocation.height );
+        self->cache_surface =
+          cairo_surface_create_similar(window_surface,
+                                       CAIRO_CONTENT_COLOR,
+                                       allocation.width,
+                                       allocation.height );
 
         // And render the meterstuff again.
         cairo_t *cache_cr = cairo_create( self->cache_surface );
@@ -107,7 +111,7 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
                 }
                 break;
         }
-        cairo_set_source_surface (cache_cr, image, widget->allocation.width / 2 - sx / 2 + inner, widget->allocation.height / 2 - sy / 2 + inner);
+        cairo_set_source_surface (cache_cr, image, allocation.width / 2 - sx / 2 + inner, allocation.height / 2 - sy / 2 + inner);
         cairo_paint (cache_cr);
         cairo_surface_destroy (image);
         cairo_destroy( cache_cr );

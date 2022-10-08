@@ -37,15 +37,19 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_LED(widget));
 
     CalfLed *self = CALF_LED(widget);
-    GdkWindow *window = widget->window;
+    GdkWindow *window = gtk_widget_get_window(widget);
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
     
-    int width = widget->allocation.width;
-    int height = widget->allocation.height;
-    int x  = widget->allocation.x;
-    int y  = widget->allocation.y;
-    int ox = widget->style->xthickness;
-    int oy = widget->style->ythickness;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    GtkStyle *style = gtk_widget_get_style(widget);
+
+    int width = allocation.width;
+    int height = allocation.height;
+    int x  = allocation.x;
+    int y  = allocation.y;
+    int ox = style->xthickness;
+    int oy = style->ythickness;
     int sx = width - ox * 2;
     int sy = height - oy * 2;
     int xc = x + width / 2;
@@ -60,7 +64,10 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
         
         float radius, bevel;
         get_bg_color(widget, NULL, &r, &g, &b);
-        gtk_widget_style_get(widget, "border-radius", &radius, "bevel",  &bevel, NULL);
+        gtk_widget_style_get(widget,
+                             "border-radius", &radius,
+                             "bevel", &bevel,
+                             NULL);
         create_rectangle(cache_cr, 0, 0, width, height, radius);
         cairo_set_source_rgb(cache_cr, r, g, b);
         cairo_fill(cache_cr);
@@ -229,8 +236,10 @@ calf_led_init (CalfLed *self)
     self->size = 0;
     self->led_value = 0.f;
     self->cache_surface = NULL;
-    widget->requisition.width = self->size ? 24 : 19;
-    widget->requisition.height = self->size ? 18 : 14;
+    GtkRequisition requisition;
+    gtk_widget_get_requisition(widget, &requisition);
+    requisition.width = self->size ? 24 : 19;
+    requisition.height = self->size ? 18 : 14;
     gtk_widget_set_has_window(widget, FALSE);
 }
 

@@ -42,9 +42,11 @@ calf_keyboard_expose (GtkWidget *widget, GdkEventExpose *event)
     
     cairo_pattern_t *pat;
     CalfKeyboard *self = CALF_KEYBOARD(widget);
-    GdkWindow *window = widget->window;
+    GdkWindow *window = gtk_widget_get_window(widget);
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
-    int sy = widget->allocation.height - 1;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    int sy = allocation.height - 1;
     cairo_set_line_join(c, CAIRO_LINE_JOIN_MITER);
     cairo_set_line_width(c, 1);
     
@@ -105,10 +107,10 @@ calf_keyboard_expose (GtkWidget *widget, GdkEventExpose *event)
         }
     }
     
-    pat = cairo_pattern_create_linear (widget->allocation.x, widget->allocation.y, widget->allocation.x, (int)(widget->allocation.height * 0.2 + widget->allocation.y));
+    pat = cairo_pattern_create_linear (allocation.x, allocation.y, allocation.x, (int)(allocation.height * 0.2 + allocation.y));
     cairo_pattern_add_color_stop_rgba (pat, 0.0, 0, 0, 0, 0.4);
     cairo_pattern_add_color_stop_rgba (pat, 1.0, 0, 0, 0, 0);
-    cairo_rectangle(c, widget->allocation.x, widget->allocation.y, widget->allocation.width, (int)(widget->allocation.height * 0.2));
+    cairo_rectangle(c, allocation.x, allocation.y, allocation.width, (int)(allocation.height * 0.2));
     cairo_set_source(c, pat);
     cairo_fill(c);
     
@@ -124,21 +126,25 @@ calf_keyboard_realize(GtkWidget *widget)
 {
     gtk_widget_set_realized(widget, TRUE);
 
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     GdkWindowAttr attributes;
     attributes.event_mask = GDK_EXPOSURE_MASK | GDK_BUTTON1_MOTION_MASK | 
         GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | 
         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
-    attributes.x = widget->allocation.x;
-    attributes.y = widget->allocation.y;
-    attributes.width = widget->allocation.width;
-    attributes.height = widget->allocation.height;
+    attributes.x = allocation.x;
+    attributes.y = allocation.y;
+    attributes.width = allocation.width;
+    attributes.height = allocation.height;
     attributes.wclass = GDK_INPUT_OUTPUT;
     attributes.window_type = GDK_WINDOW_CHILD;
 
-    widget->window = gdk_window_new(gtk_widget_get_parent_window (widget), &attributes, GDK_WA_X | GDK_WA_Y);
+    gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window (widget), &attributes, GDK_WA_X | GDK_WA_Y));
 
-    gdk_window_set_user_data(widget->window, widget);
-    widget->style = gtk_style_attach(widget->style, widget->window);
+    gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
+    gtk_widget_set_style(widget,
+                         gtk_style_attach(gtk_widget_get_style(widget),
+                                          gtk_widget_get_window(widget)));
 }
 
 static void
@@ -158,13 +164,24 @@ calf_keyboard_size_allocate (GtkWidget *widget,
 {
     // CalfKeyboard *self = CALF_KEYBOARD(widget);
     g_assert(CALF_IS_KEYBOARD(widget));
-    widget->allocation = *allocation;
-    widget->allocation.width = widget->requisition.width;
+    GtkAllocation old_allocation;
+    GtkAllocation new_allocation;
+    GtkRequisition requisition;
+    gtk_widget_get_requisition(widget, &requisition);
+    gtk_widget_set_allocation(widget, allocation);
+    // Ensure new_allocation and allocation are different
+    gtk_widget_get_allocation(widget, &old_allocation);
+    allocation->width = requisition.width;
+    // And set it again to apply the line above
+    gtk_widget_set_allocation(widget, allocation);
+    gtk_widget_get_allocation(widget, &new_allocation);
     
     if (gtk_widget_get_realized(widget))
-        gdk_window_move_resize(widget->window, 
-            allocation->x + (allocation->width - widget->allocation.width) / 2, allocation->y, 
-            widget->allocation.width, allocation->height );
+      gdk_window_move_resize(gtk_widget_get_window(widget),
+                             old_allocation.x + (old_allocation.width - new_allocation.width) / 2,
+                             old_allocation.y,
+                             new_allocation.width,
+                             old_allocation.height);
 }
 
 static gboolean
@@ -181,7 +198,9 @@ int
 calf_keyboard_pos_to_note (CalfKeyboard *kb, int x, int y, int *vel = NULL)
 {
     // first try black keys
-    if (y <= kb->parent.allocation.height * 3 / 5 && x >= 0 && (x - 8) % 12 < 8)
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(&kb->parent, &allocation);
+    if (y <= allocation.height * 3 / 5 && x >= 0 && (x - 8) % 12 < 8)
     {
         int blackkey = (x - 8) / 12;
         if (blackkey < kb->nkeys && (59 & (1 << (blackkey % 7))))
