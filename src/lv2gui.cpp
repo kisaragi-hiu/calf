@@ -522,7 +522,7 @@ int gui_hide(LV2UI_Handle handle)
         g_signal_handler_disconnect(gui->optwindow, proxy->window_destroyed_signal);
         proxy->window_destroyed_signal = 0;
 
-        gtk_widget_hide_all(gui->optwindow);
+        gtk_widget_hide(gui->optwindow);
         gtk_widget_destroy(gui->optwindow);
         gui->optwindow = NULL;
         gui->optclosed = true;
