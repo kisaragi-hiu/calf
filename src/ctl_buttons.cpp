@@ -48,7 +48,13 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
     float x = wcx - pcx;
     float y = wcy - pcy;
     cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    // sy is used to select the right part of the image.
+    // Top half is off, bottom half is on.
     gdk_cairo_set_source_pixbuf (cr, self->toggle_image, x, y - sy);
+    // Clip away the unused part of the image.
+    GdkRectangle rect = {(gint)x, (gint)y, (gint)pw, (gint)(ph / 2)};
+    gdk_cairo_rectangle(cr, &rect);
+    cairo_clip(cr);
     cairo_paint (cr);
     cairo_destroy (cr);
     return TRUE;
