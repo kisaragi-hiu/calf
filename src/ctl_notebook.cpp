@@ -27,35 +27,6 @@ using namespace dsp;
 
 ///////////////////////////////////////// notebook ///////////////////////////////////////////////
 
-
-#define GTK_NOTEBOOK_PAGE(_glist_)         ((GtkNotebookPage *)((GList *)(_glist_))->data)
-struct _GtkNotebookPage
-{
-  GtkWidget *child;
-  GtkWidget *tab_label;
-  GtkWidget *menu_label;
-  GtkWidget *last_focus_child;  /* Last descendant of the page that had focus */
-
-  guint default_menu : 1;   /* If true, we create the menu label ourself */
-  guint default_tab  : 1;   /* If true, we create the tab label ourself */
-  guint expand       : 1;
-  guint fill         : 1;
-  guint pack         : 1;
-  guint reorderable  : 1;
-  guint detachable   : 1;
-
-  /* if true, the tab label was visible on last allocation; we track this so
-   * that we know to redraw the tab area if a tab label was hidden then shown
-   * without changing position */
-  guint tab_allocated_visible : 1;
-
-  GtkRequisition requisition;
-  GtkAllocation allocation;
-
-  gulong mnemonic_activate_signal;
-  gulong notify_visible_handler;
-};
-
 GtkWidget *
 calf_notebook_new()
 {
@@ -94,35 +65,43 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
         
         int add = 0;
         
-        if (notebook->show_tabs) {
-            GtkNotebookPage *page;
+        if (gtk_notebook_get_show_tabs(notebook)) {
+            GtkWidget *page;
+            GtkWidget *cur_page;
             GList *pages;
+            GtkWidget *tab_label;
             
             gint sp;
             gtk_widget_style_get(widget, "tab-overlap", &sp, NULL);
             
-            pages = notebook->children;
+            pages = gtk_container_get_children(GTK_CONTAINER(notebook));
             
             int cn = 0;
             while (pages) {
-                page = GTK_NOTEBOOK_PAGE (pages);
+                cur_page = gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook));
+                page = GTK_WIDGET(pages->data);
                 pages = pages->next;
-                if (page->tab_label->window == event->window &&
-                    gtk_widget_is_drawable (page->tab_label)) {
-                    int lx = page->tab_label->allocation.x;
-                    int lw = page->tab_label->allocation.width;
+                tab_label = gtk_notebook_get_tab_label(notebook, page);
+                if (gtk_widget_get_window(tab_label) ==
+                        event->window &&
+                    gtk_widget_is_drawable(tab_label)) {
+                    GtkAllocation allocation;
+                    gtk_widget_get_allocation(tab_label, &allocation);
+                    int lx = allocation.x;
+                    int lw = allocation.width;
                     
                     // fix the labels position
-                    page->tab_label->allocation.y = y + ty;
-                    page->tab_label->allocation.height = lh;
+                    allocation.y = y + ty;
+                    allocation.height = lh;
+                    gtk_widget_set_allocation(tab_label, &allocation);
                     
                     // draw tab background
                     cairo_rectangle(c, lx - tx, y, lw + 2 * tx, bh);
                     get_base_color(widget, NULL, &r, &g, &b);
-                    cairo_set_source_rgba(c, r,g,b, page != notebook->cur_page ? alpha / 2 : alpha);
+                    cairo_set_source_rgba(c, r,g,b, page != cur_page ? alpha / 2 : alpha);
                     cairo_fill(c);
                     
-                    if (page == notebook->cur_page) {
+                    if (page == cur_page) {
                         // draw tab light
                         get_bg_color(widget, NULL, &r, &g, &b);
                         cairo_rectangle(c, lx - tx + 2, y + 2, lw + 2 * tx - 4, 2);
@@ -139,7 +118,7 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
                     
                     }
                     // draw labels
-                    gtk_container_propagate_expose (GTK_CONTAINER (notebook), page->tab_label, event);
+                    gtk_container_propagate_expose (GTK_CONTAINER (notebook), tab_label, event);
                 }
                 cn++;
             }
@@ -177,10 +156,17 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
             cairo_fill_preserve(c);
         }
         // propagate expose to all children
-        if (notebook->cur_page)
-            gtk_container_propagate_expose (GTK_CONTAINER (notebook),
-                notebook->cur_page->child,
+        // Beware that get_current_page returns 0 as an index for the
+        // first page, which is falsy if used directly.
+        if (gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook)))
+        {
+            gtk_container_propagate_expose(
+                GTK_CONTAINER(notebook),
+                gtk_notebook_get_nth_page(
+                    notebook,
+                    gtk_notebook_get_current_page(notebook)),
                 event);
+        }
         
         cairo_pattern_destroy(pat);
         cairo_destroy(c);
