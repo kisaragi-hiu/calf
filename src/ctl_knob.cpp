@@ -142,8 +142,10 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_clip(ctx);
     
     // draw background
-    gdk_draw_pixbuf(GDK_DRAWABLE(widget->window), widget->style->fg_gc[0], pixbuf,
-                    0, 0, ox, oy, iw, ih, GDK_RGB_DITHER_NORMAL, 0, 0);
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    gdk_cairo_set_source_pixbuf (cr, pixbuf, ox, oy);
+    cairo_paint (cr);
+    cairo_destroy (cr);
     
     switch (self->type) {
         default:

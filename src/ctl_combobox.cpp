@@ -91,10 +91,13 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
         if (ccb->arrow) {
             int pw = gdk_pixbuf_get_width(ccb->arrow);
             int ph = gdk_pixbuf_get_height(ccb->arrow);
-            gdk_draw_pixbuf(GDK_DRAWABLE(window), widget->style->fg_gc[0],
-                ccb->arrow, 0, 0,
-                x + sx - padx - pw, y + (sy - ph) / 2, pw, ph,
-                GDK_RGB_DITHER_NORMAL, 0, 0);
+            cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(window));
+            gdk_cairo_set_source_pixbuf(cr, ccb->arrow,
+                                        x + sx - padx - pw,
+                                        y + (sy - ph) / 2);
+
+            cairo_paint (cr);
+            cairo_destroy (cr);
         }
         
         g_free(lab);

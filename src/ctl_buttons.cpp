@@ -45,8 +45,10 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
     float sy = off * ph / 2;
     float x = wcx - pcx;
     float y = wcy - pcy;
-    gdk_draw_pixbuf(GDK_DRAWABLE(widget->window), widget->style->fg_gc[0],
-                    self->toggle_image, 0, sy, x, y, pw, ph / 2, GDK_RGB_DITHER_NORMAL, 0, 0);
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    gdk_cairo_set_source_pixbuf (cr, self->toggle_image, x, y - sy);
+    cairo_paint (cr);
+    cairo_destroy (cr);
     return TRUE;
 }
 
@@ -532,16 +534,10 @@ calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
     int x = widget->allocation.x + widget->allocation.width / 2 - width / 2;
     int y = widget->allocation.y + widget->allocation.height / 2 - height / 2;
     
-    gdk_draw_pixbuf(GDK_DRAWABLE(widget->window),
-                    widget->style->fg_gc[0],
-                    self->image[self->state],
-                    0,
-                    0,
-                    x,
-                    y,
-                    width,
-                    height,
-                    GDK_RGB_DITHER_NORMAL, 0, 0);
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    gdk_cairo_set_source_pixbuf (cr, self->image[self->state], x, y);
+    cairo_paint (cr);
+    cairo_destroy (cr);
     return TRUE;
 }
 
