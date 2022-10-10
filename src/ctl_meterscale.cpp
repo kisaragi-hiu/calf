@@ -195,8 +195,8 @@ calf_meter_scale_init (CalfMeterScale *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
     gtk_widget_set_has_window(widget, FALSE);
-    widget->requisition.width = 40;
-    widget->requisition.height = 12;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 12;
     self->mode     = VU_STANDARD;
     self->position = 0;
     self->dots     = 0;

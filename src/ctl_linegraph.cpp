@@ -1458,8 +1458,8 @@ calf_line_graph_init (CalfLineGraph *lg)
     // GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS | GTK_SENSITIVE | GTK_PARENT_SENSITIVE);
     gtk_widget_add_events(widget, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
     
-    widget->requisition.width  = 40;
-    widget->requisition.height = 40;
+    // widget->requisition.width  = 40;
+    // widget->requisition.height = 40;
     lg->pad_x                = gtk_widget_get_style(widget)->xthickness;
     lg->pad_y                = gtk_widget_get_style(widget)->ythickness;
     lg->force_cache          = true;

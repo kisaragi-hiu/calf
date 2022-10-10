@@ -190,7 +190,7 @@ calf_fader_draw (GtkWidget *widget, cairo_t *cr)
     g_assert(CALF_IS_FADER(widget));
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = gtk_widget_get_window(widget);
+        // GdkWindow *window = gtk_widget_get_window(widget);
         GtkScale  *scale  = GTK_SCALE(widget);
         GtkRange  *range  = GTK_RANGE(widget);
         CalfFader *fader  = CALF_FADER(widget);
@@ -259,8 +259,9 @@ calf_fader_draw (GtkWidget *widget, cairo_t *cr)
             gint _x, _y;
             layout = gtk_scale_get_layout (scale);
             gtk_scale_get_layout_offsets (scale, &_x, &_y);
-            gtk_paint_layout (gtk_widget_get_style(widget), window, GTK_STATE_NORMAL, FALSE, NULL,
-                              widget, horiz ? "hscale" : "vscale", _x, _y, layout);
+            gtk_render_layout(gtk_widget_get_style_context(widget), cr, _x, _y, layout);
+            // gtk_paint_layout (gtk_widget_get_style(widget), cr, GTK_STATE_NORMAL, FALSE,
+            //                   widget, horiz ? "hscale" : "vscale", _x, _y, layout);
         }
         
         // cairo_destroy(cr);
@@ -287,8 +288,8 @@ static void
 calf_fader_init (CalfFader *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 40;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 40;
     
     g_signal_connect(widget, "motion-notify-event", G_CALLBACK (calf_fader_motion), NULL);
     g_signal_connect(widget, "enter-notify-event", G_CALLBACK (calf_fader_enter), NULL);

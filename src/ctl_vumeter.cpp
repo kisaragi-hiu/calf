@@ -457,8 +457,8 @@ calf_vumeter_init (CalfVUMeter *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
     //GTK_WIDGET_SET_FLAGS (widget, GTK_NO_WINDOW);
-    widget->requisition.width =  self->vumeter_width;
-    widget->requisition.height = self->vumeter_height;
+    // widget->requisition.width =  self->vumeter_width;
+    // widget->requisition.height = self->vumeter_height;
     self->cache_surface = NULL;
     self->falling = false;
     self->holding = false;

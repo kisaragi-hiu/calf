@@ -129,8 +129,8 @@ static void
 calf_frame_init (CalfFrame *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 40;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 40;
 }
 
 GType

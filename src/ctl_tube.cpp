@@ -276,36 +276,36 @@ static void
 calf_tube_init (CalfTube *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
-    switch(self->direction) {
-        case 1:
-            switch(self->size) {
-                case 1:
-                    widget->requisition.width = 82;
-                    widget->requisition.height = 130;
-                    break;
-                default:
-                case 2:
-                    widget->requisition.width = 130;
-                    widget->requisition.height = 210;
-                    break;
-            }
-            break;
-        default:
-        case 2:
-            switch(self->size) {
-                case 1:
-                    widget->requisition.width = 130;
-                    widget->requisition.height = 82;
-                    break;
-                default:
-                case 2:
-                    widget->requisition.width = 210;
-                    widget->requisition.height = 130;
-                    break;
-            }
-            break;
-    }
+    gtk_widget_set_can_focus(widget, TRUE);
+    // switch(self->direction) {
+    //     case 1:
+    //         switch(self->size) {
+    //             case 1:
+    //                 widget->requisition.width = 82;
+    //                 widget->requisition.height = 130;
+    //                 break;
+    //             default:
+    //             case 2:
+    //                 widget->requisition.width = 130;
+    //                 widget->requisition.height = 210;
+    //                 break;
+    //         }
+    //         break;
+    //     default:
+    //     case 2:
+    //         switch(self->size) {
+    //             case 1:
+    //                 widget->requisition.width = 130;
+    //                 widget->requisition.height = 82;
+    //                 break;
+    //             default:
+    //             case 2:
+    //                 widget->requisition.width = 210;
+    //                 widget->requisition.height = 130;
+    //                 break;
+    //         }
+    //         break;
+    // }
     self->falling = false;
     self->cache_surface = NULL;
 }

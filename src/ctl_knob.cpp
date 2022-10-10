@@ -584,8 +584,8 @@ calf_knob_init (CalfKnob *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
     gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
-    widget->requisition.width = 40;
-    widget->requisition.height = 40;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 40;
     self->knob_image = NULL;
 }
 

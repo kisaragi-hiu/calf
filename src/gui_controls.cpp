@@ -224,9 +224,9 @@ gboolean param_control::value_entry_action(GtkEntry *widget, GdkEvent *event, vo
     param_control *self = (param_control *)user_data;
     const parameter_properties &props = self->get_props();
     GdkEventKey *key = (GdkEventKey*)event;
-    if(key->keyval == GDK_Escape)
+    if(key->keyval == GDK_KEY_Escape)
         self->destroy_value_entry();
-    else if (key->keyval == GDK_Return) {
+    else if (key->keyval == GDK_KEY_Return) {
         float val = props.string_to_value(gtk_entry_get_text(widget));
         self->gui->plugin->set_param_value(self->param_no, val);
         self->set();
@@ -300,7 +300,7 @@ GtkWidget *combo_box_param_control::create(plugin_gui *_gui, int _param_no)
         gui->window->get_environment()->get_image_factory()->get("combo_arrow"));
     
     gtk_combo_box_set_model (GTK_COMBO_BOX(widget), GTK_TREE_MODEL(lstore));
-    g_signal_connect (GTK_OBJECT (widget), "changed", G_CALLBACK (combo_value_changed), (gpointer)this);
+    g_signal_connect (widget, "changed", G_CALLBACK (combo_value_changed), (gpointer)this);
     gtk_widget_set_name(widget, "Calf-Combobox");
     return widget;
 }
@@ -436,9 +436,9 @@ GtkWidget *hscale_param_control::create(plugin_gui *_gui, int _param_no)
 
     widget = calf_fader_new(1, get_int("size", 2), 0, 1, get_props().get_increment());
     
-    g_signal_connect (GTK_OBJECT (widget), "value-changed", G_CALLBACK (hscale_value_changed), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "format-value", G_CALLBACK (hscale_format_value), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "button-press-event", G_CALLBACK (scale_button_press), (gpointer)this);
+    g_signal_connect (widget, "value-changed", G_CALLBACK (hscale_value_changed), (gpointer)this);
+    g_signal_connect (widget, "format-value", G_CALLBACK (hscale_format_value), (gpointer)this);
+    g_signal_connect (widget, "button-press-event", G_CALLBACK (scale_button_press), (gpointer)this);
     
     if(get_int("inverted", 0) > 0) {
         gtk_range_set_inverted(GTK_RANGE(widget), TRUE);
@@ -507,8 +507,8 @@ GtkWidget *vscale_param_control::create(plugin_gui *_gui, int _param_no)
     gui = _gui;
     param_no = _param_no;
     widget = calf_fader_new(0, get_int("size", 2), 0, 1, get_props().get_increment());
-    g_signal_connect (GTK_OBJECT (widget), "value-changed", G_CALLBACK (vscale_value_changed), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "button-press-event", G_CALLBACK (scale_button_press), (gpointer)this);
+    g_signal_connect (widget, "value-changed", G_CALLBACK (vscale_value_changed), (gpointer)this);
+    g_signal_connect (widget, "button-press-event", G_CALLBACK (scale_button_press), (gpointer)this);
 
     gtk_scale_set_draw_value(GTK_SCALE(widget), FALSE);
     
@@ -698,7 +698,7 @@ GtkWidget *check_param_control::create(plugin_gui *_gui, int _param_no)
     param_no = _param_no;
     
     widget  = gtk_check_button_new ();
-    g_signal_connect (GTK_OBJECT (widget), "toggled", G_CALLBACK (check_value_changed), (gpointer)this);
+    g_signal_connect (widget, "toggled", G_CALLBACK (check_value_changed), (gpointer)this);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-Checkbox");
     return widget;
 }
@@ -753,7 +753,7 @@ GtkWidget *radio_param_control::create(plugin_gui *_gui, int _param_no)
     gtk_toggle_button_set_mode (GTK_TOGGLE_BUTTON (widget), FALSE);
         
     gui->set_radio_group(param_no, gtk_radio_button_get_group (GTK_RADIO_BUTTON (widget)));
-    g_signal_connect (GTK_OBJECT (widget), "clicked", G_CALLBACK (radio_clicked), (gpointer)this);
+    g_signal_connect (widget, "clicked", G_CALLBACK (radio_clicked), (gpointer)this);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-RadioButton");
     return widget;
 }
@@ -795,7 +795,7 @@ GtkWidget *spin_param_control::create(plugin_gui *_gui, int _param_no)
     else
         widget  = gtk_spin_button_new_with_range (props.min, props.max, 1);
     gtk_spin_button_set_digits (GTK_SPIN_BUTTON(widget), get_int("digits", 0));
-    g_signal_connect (GTK_OBJECT (widget), "value-changed", G_CALLBACK (value_changed), (gpointer)this);
+    g_signal_connect (widget, "value-changed", G_CALLBACK (value_changed), (gpointer)this);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-SpinButton");
     return widget;
 }
@@ -826,8 +826,8 @@ GtkWidget *button_param_control::create(plugin_gui *_gui, int _param_no)
     gui = _gui;
     param_no = _param_no;
     widget  = calf_button_new ((gchar*)get_props().name);
-    g_signal_connect (GTK_OBJECT (widget), "pressed", G_CALLBACK (button_clicked), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "released", G_CALLBACK (button_clicked), (gpointer)this);
+    g_signal_connect (widget, "pressed", G_CALLBACK (button_clicked), (gpointer)this);
+    g_signal_connect (widget, "released", G_CALLBACK (button_clicked), (gpointer)this);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-Button");
     return widget;
 }
@@ -939,7 +939,7 @@ GtkWidget *toggle_param_control::create(plugin_gui *_gui, int _param_no)
         sprintf(imgname, "toggle_%d", get_int("size", 2));
     calf_toggle_set_pixbuf(toggle, images->get(imgname));
     
-    g_signal_connect (GTK_OBJECT (widget), "value-changed", G_CALLBACK (toggle_value_changed), (gpointer)this);
+    g_signal_connect (widget, "value-changed", G_CALLBACK (toggle_value_changed), (gpointer)this);
     //gtk_widget_set_name(GTK_WIDGET(widget), "Calf-ToggleButton");
     return widget;
 }
@@ -982,9 +982,9 @@ GtkWidget *tap_button_param_control::create(plugin_gui *_gui, int _param_no)
         gui->window->get_environment()->get_image_factory()->get("tap_prelight"),
         gui->window->get_environment()->get_image_factory()->get("tap_active"));
     //CALF_TAP(widget)->size = get_int("size", 2);
-    g_signal_connect (GTK_OBJECT (widget), "button-press-event", G_CALLBACK (tap_button_pressed), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "released", G_CALLBACK (tap_button_released), (gpointer)this);
-    g_signal_connect (GTK_OBJECT (widget), "leave", G_CALLBACK (tap_button_released), (gpointer)this);
+    g_signal_connect (widget, "button-press-event", G_CALLBACK (tap_button_pressed), (gpointer)this);
+    g_signal_connect (widget, "released", G_CALLBACK (tap_button_released), (gpointer)this);
+    g_signal_connect (widget, "leave", G_CALLBACK (tap_button_released), (gpointer)this);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-TapButton");
     return widget;
 }
@@ -1255,8 +1255,8 @@ GtkWidget *line_graph_param_control::create(plugin_gui *a_gui, int a_param_no)
     widget                     = calf_line_graph_new ();
     
     CalfLineGraph *clg         = CALF_LINE_GRAPH(widget);
-    widget->requisition.width  = get_int("width", 40);
-    widget->requisition.height = get_int("height", 40);
+    // widget->requisition.width  = get_int("width", 40);
+    // widget->requisition.height = get_int("height", 40);
     
     calf_line_graph_set_square(clg, get_int("square", 0));
     
@@ -1491,8 +1491,8 @@ GtkWidget *phase_graph_param_control::create(plugin_gui *_gui, int _param_no)
     param_no = _param_no;
     widget = calf_phase_graph_new ();
     CalfPhaseGraph *clg = CALF_PHASE_GRAPH(widget);
-    widget->requisition.width = get_int("size", 40);
-    widget->requisition.height = get_int("size", 40);
+    // widget->requisition.width = get_int("size", 40);
+    // widget->requisition.height = get_int("size", 40);
     clg->source = gui->plugin->get_phase_graph_iface();
     clg->source_id = param_no;
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-PhaseGraph");
@@ -1527,8 +1527,8 @@ GtkWidget *tuner_param_control::create(plugin_gui *_gui, int _param_no)
     param_no = _param_no;
     widget = calf_tuner_new ();
     //CalfTuner *tuner = CALF_TUNER(widget);
-    widget->requisition.width = get_int("width", 40);
-    widget->requisition.height = get_int("height", 40);
+    // widget->requisition.width = get_int("width", 40);
+    // widget->requisition.height = get_int("height", 40);
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-Tuner");
     
     const string &cents_name = attribs["param_cents"];
@@ -1562,8 +1562,8 @@ GtkWidget *pattern_param_control::create(plugin_gui *_gui, int _param_no)
     gui = _gui;
     param_no = _param_no;
     widget = calf_pattern_new ();
-    widget->requisition.width = get_int("width", 300);
-    widget->requisition.height = get_int("height", 60);
+    // widget->requisition.width = get_int("width", 300);
+    // widget->requisition.height = get_int("height", 60);
     const string &beats_name = attribs["beats"];
     if (beats_name != "") {
         param_beats = gui->get_param_no_by_name(beats_name);
@@ -1687,8 +1687,8 @@ GtkWidget *listview_param_control::create(plugin_gui *_gui, int _param_no)
                 g_object_set(cr, "editable", TRUE, "mode", GTK_CELL_RENDERER_MODE_EDITABLE, NULL);
         }
         g_object_set_data (G_OBJECT(cr), "column", (void *)&tci[i]);
-        g_signal_connect (GTK_OBJECT (cr), "edited", G_CALLBACK (on_edited), (gpointer)this);
-        g_signal_connect (GTK_OBJECT (cr), "editing-canceled", G_CALLBACK (on_editing_canceled), (gpointer)this);
+        g_signal_connect (cr, "edited", G_CALLBACK (on_edited), (gpointer)this);
+        g_signal_connect (cr, "editing-canceled", G_CALLBACK (on_editing_canceled), (gpointer)this);
         gtk_tree_view_insert_column_with_attributes(tree, i, tci[i].name, cr, "text", i, NULL);
     }
     gtk_tree_view_set_headers_visible(tree, TRUE);
@@ -1803,7 +1803,7 @@ void notebook_param_control::created()
     hook_params();
     gtk_widget_show_all(widget);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(widget), page);
-    g_signal_connect (GTK_OBJECT (widget), "switch-page", G_CALLBACK (notebook_page_changed), (gpointer)this);
+    g_signal_connect (widget, "switch-page", G_CALLBACK (notebook_page_changed), (gpointer)this);
     //set();
 }
 void notebook_param_control::get()

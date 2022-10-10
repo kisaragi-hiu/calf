@@ -136,8 +136,8 @@ calf_toggle_init (CalfToggle *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
     gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
-    widget->requisition.width = 30;
-    widget->requisition.height = 20;
+    // widget->requisition.width = 30;
+    // widget->requisition.height = 20;
     self->size = 1;
 }
 
@@ -295,8 +295,10 @@ calf_button_draw (GtkWidget *widget, cairo_t *cr)
             gtk_widget_style_get(widget, "alpha-active", &a, NULL);
         else
             gtk_widget_style_get(widget, "alpha-normal", &a, NULL);
-        cairo_rectangle(cr, x + sx - border->right - ox + pinm, y + sy / 2 - pinh / 2,
-            border->right - pinm * 2 - ox, pinh);
+        cairo_rectangle(cr,
+                        x + sx - border->right - ox + pinm, y + sy / 2 - pinh / 2,
+                        border->right - pinm * 2 - ox,
+                        pinh);
         cairo_set_source_rgba(cr, r, g, b, a);
         cairo_fill(cr);
     }
@@ -336,8 +338,8 @@ static void
 calf_button_init (CalfButton *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 20;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 20;
 }
 
 GType
@@ -419,8 +421,8 @@ static void
 calf_toggle_button_init (CalfToggleButton *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 20;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 20;
 }
 
 GType
@@ -501,8 +503,8 @@ static void
 calf_radio_button_init (CalfRadioButton *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 20;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 20;
 }
 
 GType
@@ -579,8 +581,8 @@ calf_tap_button_set_pixbufs (CalfTapButton *self, GdkPixbuf *image1, GdkPixbuf *
     self->image[0] = image1;
     self->image[1] = image2;
     self->image[2] = image3;
-    widget->requisition.width = gdk_pixbuf_get_width(self->image[0]);
-    widget->requisition.height = gdk_pixbuf_get_height(self->image[0]);
+    // widget->requisition.width = gdk_pixbuf_get_width(self->image[0]);
+    // widget->requisition.height = gdk_pixbuf_get_height(self->image[0]);
     gtk_widget_queue_resize(widget);
 }
 

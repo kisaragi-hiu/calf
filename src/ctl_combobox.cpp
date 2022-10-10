@@ -146,8 +146,8 @@ static void
 calf_combobox_init (CalfCombobox *self)
 {
     GtkWidget *widget = GTK_WIDGET(self);
-    widget->requisition.width = 40;
-    widget->requisition.height = 20;
+    // widget->requisition.width = 40;
+    // widget->requisition.height = 20;
 }
 
 GType
