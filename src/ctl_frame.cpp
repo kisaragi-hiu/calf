@@ -107,11 +107,11 @@ calf_frame_draw (GtkWidget *widget, cairo_t *cr)
         
         // cairo_destroy(cr);
     }
-    // if (gtk_bin_get_child(GTK_BIN(widget))) {
-    //     gtk_container_propagate_expose(GTK_CONTAINER(widget),
-    //                                    gtk_bin_get_child(GTK_BIN(widget)),
-    //                                    event);
-    // }
+    if (gtk_bin_get_child(GTK_BIN(widget))) {
+        gtk_container_propagate_draw(GTK_CONTAINER(widget),
+                                     gtk_bin_get_child(GTK_BIN(widget)),
+                                     cr);
+    }
     return FALSE;
 }
 

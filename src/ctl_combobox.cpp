@@ -84,10 +84,10 @@ calf_combobox_draw (GtkWidget *widget, cairo_t *cr)
         display_background(widget, cr, x, y, sx - padx * 2, sy - pady * 2, padx, pady, radius, bevel, g_ascii_isspace(lab[0]) ? 0 : 1, shadow, hover ? lightshover : lights, hover ? dullhover : dull);
         
         // text
-        // gtk_container_propagate_expose
-        //     (GTK_CONTAINER (widget),
-        //      gtk_bin_get_child(GTK_BIN(widget)),
-        //      event);
+        gtk_container_propagate_draw
+            (GTK_CONTAINER (widget),
+             gtk_bin_get_child(GTK_BIN(widget)),
+             cr);
 
         // arrow
         if (ccb->arrow) {

@@ -245,7 +245,7 @@ calf_button_draw (GtkWidget *widget, cairo_t *cr)
     g_assert(CALF_IS_BUTTON(widget) || CALF_IS_TOGGLE_BUTTON(widget) || CALF_IS_RADIO_BUTTON(widget));
     
     // GdkWindow *window    = gtk_widget_get_window(widget);
-    // GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
+    GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
     
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);
@@ -305,7 +305,7 @@ calf_button_draw (GtkWidget *widget, cairo_t *cr)
     }
     
     // cairo_destroy(cr);
-    // gtk_container_propagate_expose (GTK_CONTAINER (widget), child, event);
+    gtk_container_propagate_draw(GTK_CONTAINER (widget), child, cr);
 
     return FALSE;
 }

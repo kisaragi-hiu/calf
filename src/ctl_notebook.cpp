@@ -119,7 +119,10 @@ calf_notebook_draw (GtkWidget *widget, cairo_t *cr)
                     
                     }
                     // draw labels
-                    // gtk_container_propagate_expose (GTK_CONTAINER (notebook), tab_label, event);
+                    gtk_container_propagate_draw
+                        (GTK_CONTAINER (notebook),
+                         tab_label,
+                         cr);
                 }
                 cn++;
             }
@@ -159,15 +162,15 @@ calf_notebook_draw (GtkWidget *widget, cairo_t *cr)
         // propagate expose to all children
         // Beware that get_current_page returns 0 as an index for the
         // first page, which is falsy if used directly.
-        // if (gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook)))
-        // {
-        //     gtk_container_propagate_expose(
-        //         GTK_CONTAINER(notebook),
-        //         gtk_notebook_get_nth_page(
-        //             notebook,
-        //             gtk_notebook_get_current_page(notebook)),
-        //         event);
-        // }
+        if (gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook)))
+        {
+            gtk_container_propagate_draw(
+                GTK_CONTAINER(notebook),
+                gtk_notebook_get_nth_page(
+                    notebook,
+                    gtk_notebook_get_current_page(notebook)),
+                cr);
+        }
         
         cairo_pattern_destroy(pat);
         // cairo_destroy(cr);
