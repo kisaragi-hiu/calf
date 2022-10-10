@@ -262,11 +262,11 @@ calf_button_draw (GtkWidget *widget, cairo_t *cr)
     
     float r, g, b;
     float radius, bevel, inset;
-    GtkBorder *border;
+    // GtkBorder *border;
     
     get_bg_color(widget, NULL, &r, &g, &b);
     gtk_widget_style_get(widget, "border-radius", &radius, "bevel",  &bevel, "inset", &inset, NULL);
-    gtk_widget_style_get(widget, "inner-border", &border, NULL);
+    // gtk_widget_style_get(widget, "inner-border", &border, NULL);
     
     // inset
     draw_bevel(cr, x, y, sx, sy, radius, inset*-1);
@@ -289,15 +289,16 @@ calf_button_draw (GtkWidget *widget, cairo_t *cr)
         gtk_widget_style_get(widget, "indicator", &pinh, NULL);
         get_text_color(widget, NULL, &r, &g, &b);
         float a;
-        if (gtk_widget_get_state(widget) == GTK_STATE_PRELIGHT)
+        if (gtk_widget_get_state_flags(widget) & GTK_STATE_FLAG_PRELIGHT)
             gtk_widget_style_get(widget, "alpha-prelight", &a, NULL);
-        else if (gtk_widget_get_state(widget) == GTK_STATE_ACTIVE)
+        else if (gtk_widget_get_state_flags(widget) & GTK_STATE_FLAG_ACTIVE)
             gtk_widget_style_get(widget, "alpha-active", &a, NULL);
         else
             gtk_widget_style_get(widget, "alpha-normal", &a, NULL);
         cairo_rectangle(cr,
-                        x + sx - border->right - ox + pinm, y + sy / 2 - pinh / 2,
-                        border->right - pinm * 2 - ox,
+                        x + sx /* - border->right */ - ox + pinm,
+                        y + sy / 2 - pinh / 2,
+                        /* border->right */ 26 - pinm * 2 - ox,
                         pinh);
         cairo_set_source_rgba(cr, r, g, b, a);
         cairo_fill(cr);

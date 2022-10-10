@@ -28,7 +28,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxEntry" id="preset_name">
+              <object class="GtkComboBox" id="preset_name">
                 <property name="visible">True</property>
                 <property name="has_frame">False</property>
               </object>
@@ -128,7 +128,7 @@
                 <property name="right_attach">2</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_vu_meters">
                 <property name="visible">True</property>
@@ -154,7 +154,7 @@
                 <property name="bottom_attach">2</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_win_to_tray">
                 <property name="visible">True</property>
@@ -180,7 +180,7 @@
                 <property name="bottom_attach">3</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_win_start_hidden">
                 <property name="visible">True</property>
@@ -206,7 +206,7 @@
                 <property name="bottom_attach">4</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_rack_float">
                 <property name="visible">True</property>
@@ -230,7 +230,7 @@
                 <property name="bottom_attach">5</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_float_size">
                 <property name="visible">True</property>
@@ -255,7 +255,7 @@
                 <property name="bottom_attach">6</property>
               </packing>
             </child>
-            
+
             <child>
               <object class="GtkLabel" id="prefs_label_style">
                 <property name="visible">True</property>
@@ -280,7 +280,7 @@
                 <property name="bottom_attach">7</property>
               </packing>
             </child>
-            
+
           </object>
           <packing>
             <property name="position">1</property>

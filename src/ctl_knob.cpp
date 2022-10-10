@@ -295,6 +295,8 @@ calf_knob_size_request (GtkWidget *widget,
 {
     g_assert(CALF_IS_KNOB(widget));
     CalfKnob *self = CALF_KNOB(widget);
+    requisition->width  = 40;
+    requisition->height = 40;
     if (!self->knob_image)
         return;
     requisition->width  = gdk_pixbuf_get_width(self->knob_image);
