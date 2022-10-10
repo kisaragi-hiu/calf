@@ -99,16 +99,16 @@ void calf_fader_set_layout(GtkWidget *widget)
 GtkWidget *
 calf_fader_new(const int horiz = 0, const int size = 2, const double min = 0, const double max = 1, const double step = 0.1)
 {
-    GtkObject *adj;
+    GtkAdjustment *adj;
     gint digits;
     
-    adj = gtk_adjustment_new (min, min, max, step, 10 * step, 0);
+    adj = gtk_adjustment_new(min, min, max, step, 10 * step, 0);
     
     if (fabs (step) >= 1.0 || step == 0.0)
         digits = 0;
     else
         digits = std::min(5, abs((gint) floor (log10 (fabs (step)))));
-        
+    
     GtkWidget *widget = GTK_WIDGET( g_object_new (CALF_TYPE_FADER, NULL ));
     CalfFader *self = CALF_FADER(widget);
     
@@ -291,11 +291,11 @@ calf_fader_init (CalfFader *self)
     widget->requisition.width = 40;
     widget->requisition.height = 40;
     
-    g_signal_connect(GTK_OBJECT(widget), "motion-notify-event", G_CALLBACK (calf_fader_motion), NULL);
-    g_signal_connect(GTK_OBJECT(widget), "enter-notify-event", G_CALLBACK (calf_fader_enter), NULL);
-    g_signal_connect(GTK_OBJECT(widget), "leave-notify-event", G_CALLBACK (calf_fader_leave), NULL);
-    g_signal_connect(GTK_OBJECT(widget), "size-allocate", G_CALLBACK (calf_fader_allocate), NULL);
-    g_signal_connect(GTK_OBJECT(widget), "size-request", G_CALLBACK (calf_fader_request), NULL);
+    g_signal_connect(widget, "motion-notify-event", G_CALLBACK (calf_fader_motion), NULL);
+    g_signal_connect(widget, "enter-notify-event", G_CALLBACK (calf_fader_enter), NULL);
+    g_signal_connect(widget, "leave-notify-event", G_CALLBACK (calf_fader_leave), NULL);
+    g_signal_connect(widget, "size-allocate", G_CALLBACK (calf_fader_allocate), NULL);
+    g_signal_connect(widget, "size-request", G_CALLBACK (calf_fader_request), NULL);
 }
 
 GType
