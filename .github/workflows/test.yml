@@ -15,7 +15,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt update
-          sudo apt install -y libglib2.0-dev libgtk2.0-dev libreadline-dev libexpat1-dev libjack-dev libfftw3-dev libfluidsynth-dev libcairo2-dev libasound2-dev lv2-dev libtool
+          sudo apt install -y libglib2.0-dev libgtk2.0-dev libgtk-3-dev libreadline-dev libexpat1-dev libjack-dev libfftw3-dev libfluidsynth-dev libcairo2-dev libasound2-dev lv2-dev libtool
       - name: Compile
         run: |
           ./autogen.sh
