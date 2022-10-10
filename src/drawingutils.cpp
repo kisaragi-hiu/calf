@@ -197,12 +197,12 @@ void get_color (GtkWidget * widget, const gchar * type, GtkStateType * state, fl
     }
 }
 
-void clip_context (GtkWidget *widget, cairo_t *cr, GdkRegion *region) {
+void clip_context (GtkWidget *widget, cairo_t *cr, cairo_region_t *region) {
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);
-    GdkRegion *reg = gdk_region_rectangle(&allocation);
+    cairo_region_t *reg = cairo_region_create_rectangle(&allocation);
     if (region)
-        gdk_region_intersect(reg, region);
+        cairo_region_intersect(reg, region);
     gdk_cairo_region(cr, reg);
     cairo_clip (cr);
 }

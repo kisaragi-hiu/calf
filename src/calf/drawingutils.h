@@ -40,7 +40,7 @@ void get_base_color(GtkWidget * widget, GtkStateType * state, float * r, float *
 void get_text_color(GtkWidget * widget, GtkStateType * state, float * r, float * g, float * b);
 void get_color(GtkWidget * widget, const gchar * type, GtkStateType * state, float * r, float * g, float * b);
 
-void clip_context(GtkWidget * widget, cairo_t * cr, GdkRegion *region);
+void clip_context(GtkWidget * widget, cairo_t * cr, cairo_region_t *region);
 void create_rectangle(cairo_t * cr, gint x, gint y, gint width, gint height, float rad);
 void draw_bevel(cairo_t * cr, gint x, gint y, gint width, gint height, float rad, float bevel);
 
