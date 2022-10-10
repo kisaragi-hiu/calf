@@ -248,7 +248,7 @@ calf_tuner_init (CalfTuner *self)
     widget->requisition.width = 40;
     widget->requisition.height = 40;
     self->background = NULL;
-    g_signal_connect(GTK_OBJECT(widget), "unrealize", G_CALLBACK(calf_tuner_unrealize), (gpointer)self);
+    g_signal_connect(widget, "unrealize", G_CALLBACK(calf_tuner_unrealize), (gpointer)self);
 }
 
 GtkWidget *

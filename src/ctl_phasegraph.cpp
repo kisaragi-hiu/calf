@@ -310,7 +310,7 @@ calf_phase_graph_init (CalfPhaseGraph *self)
     widget->requisition.height = 40;
     self->background = NULL;
     gtk_widget_set_has_window(widget, FALSE);
-    g_signal_connect(GTK_OBJECT(widget), "unrealize", G_CALLBACK(calf_phase_graph_unrealize), (gpointer)self);
+    g_signal_connect(widget, "unrealize", G_CALLBACK(calf_phase_graph_unrealize), (gpointer)self);
 }
 
 GtkWidget *

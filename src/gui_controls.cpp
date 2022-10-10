@@ -117,7 +117,7 @@ static void on_control_destroy(GtkWidget *w, gpointer p)
 void control_base::created()
 {
     set_std_properties();
-    g_signal_connect(GTK_OBJECT(widget), "destroy", (GCallback)on_control_destroy, this);
+    g_signal_connect(widget, "destroy", (GCallback)on_control_destroy, this);
 }
 
 /************************* param-associated control base class **************/
@@ -170,7 +170,7 @@ void param_control::add_context_menu_handler()
 {
     if (widget)
     {
-        g_signal_connect(GTK_OBJECT(widget), "button-press-event", (GCallback)on_button_press_event, this);
+        g_signal_connect(widget, "button-press-event", (GCallback)on_button_press_event, this);
     }
 }
 
@@ -894,7 +894,7 @@ GtkWidget *knob_param_control::create(plugin_gui *_gui, int _param_no)
     for (unsigned int i = 0; i < t.size(); i++)
         t[i] = props.to_01(t[i]);
     knob->ticks = t;
-    g_signal_connect(GTK_OBJECT(widget), "value-changed", G_CALLBACK(knob_value_changed), (gpointer)this);
+    g_signal_connect(widget, "value-changed", G_CALLBACK(knob_value_changed), (gpointer)this);
     return widget;
 }
 
@@ -1152,7 +1152,7 @@ GtkWidget *entry_param_control::create(plugin_gui *_gui, int _param_no)
     
     widget = gtk_entry_new();
     entry = GTK_ENTRY(widget);
-    g_signal_connect(GTK_OBJECT(widget), "changed", G_CALLBACK(entry_value_changed), (gpointer)this);
+    g_signal_connect(widget, "changed", G_CALLBACK(entry_value_changed), (gpointer)this);
     gtk_editable_set_editable(GTK_EDITABLE(entry), get_int("editable", 1));
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-Entry");
     return widget;
@@ -1186,7 +1186,7 @@ GtkWidget *filechooser_param_control::create(plugin_gui *_gui, int _param_no)
     filechooser = GTK_FILE_CHOOSER_BUTTON(widget);
     // XXXKF this is GTK+ 2.12 function, does any replacement exist?
     // MS: switched from g_signal_connect to g_signal_connect for better emission of signals
-    g_signal_connect(GTK_OBJECT(widget), "file-set", G_CALLBACK(filechooser_value_changed), (gpointer)this);
+    g_signal_connect(widget, "file-set", G_CALLBACK(filechooser_value_changed), (gpointer)this);
     if (attribs.count("width"))
         gtk_widget_set_size_request (widget, get_int("width", 200), -1);
     if (attribs.count("width_chars")) {
@@ -1575,7 +1575,7 @@ GtkWidget *pattern_param_control::create(plugin_gui *_gui, int _param_no)
         gui->add_param_ctl(param_bars, this);
     } else param_bars = -1;
     gtk_widget_set_name(GTK_WIDGET(widget), "Calf-Pattern");
-    g_signal_connect(GTK_OBJECT(widget), "handle-changed", (GCallback)on_handle_changed, this);
+    g_signal_connect(widget, "handle-changed", (GCallback)on_handle_changed, this);
     return widget;
 }
 

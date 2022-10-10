@@ -1477,7 +1477,7 @@ calf_line_graph_init (CalfLineGraph *lg)
                              | LG_REALTIME_GRID | LG_REALTIME_GRAPH
                              | LG_REALTIME_DOT  | LG_REALTIME_MOVING;
     
-    g_signal_connect(GTK_OBJECT(widget), "unrealize", G_CALLBACK(calf_line_graph_unrealize), (gpointer)lg);
+    g_signal_connect(widget, "unrealize", G_CALLBACK(calf_line_graph_unrealize), (gpointer)lg);
     
     for(int i = 0; i < FREQ_HANDLES; i++) {
         FreqHandle *handle      = &lg->freq_handles[i];

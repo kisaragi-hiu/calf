@@ -467,7 +467,7 @@ calf_pattern_init (CalfPattern *p)
     p->bars                 = 1;
     p->hand_cursor          = gdk_cursor_new(GDK_DOUBLE_ARROW);
     
-    g_signal_connect(GTK_OBJECT(widget), "unrealize", G_CALLBACK(calf_pattern_unrealize), (gpointer)p);
+    g_signal_connect(widget, "unrealize", G_CALLBACK(calf_pattern_unrealize), (gpointer)p);
     
     p->handle_hovered.bar  = -1;
     p->handle_hovered.beat = -1;

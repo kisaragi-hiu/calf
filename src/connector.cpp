@@ -509,7 +509,7 @@ void calf_connector::create_window()
     gtk_tree_view_column_pack_start(col, renderer, FALSE);
     gtk_tree_view_column_add_attribute(col, renderer, "active", 2);
     gtk_tree_view_append_column(GTK_TREE_VIEW(inview), col);
-    g_signal_connect(GTK_OBJECT(renderer), "toggled", G_CALLBACK(inconnector_clicked), (gpointer*)this);
+    g_signal_connect(renderer, "toggled", G_CALLBACK(inconnector_clicked), (gpointer*)this);
     
     
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(inview)),
@@ -539,7 +539,7 @@ void calf_connector::create_window()
     gtk_tree_view_column_pack_start(col, renderer, FALSE);
     gtk_tree_view_column_add_attribute(col, renderer, "active", 2);
     gtk_tree_view_append_column(GTK_TREE_VIEW(outview), col);
-    g_signal_connect(GTK_OBJECT(renderer), "toggled", G_CALLBACK(outconnector_clicked), (gpointer*)this);
+    g_signal_connect(renderer, "toggled", G_CALLBACK(outconnector_clicked), (gpointer*)this);
     
     // text column
     col = gtk_tree_view_column_new();
@@ -586,7 +586,7 @@ void calf_connector::create_window()
     gtk_tree_view_column_pack_start(col, renderer, FALSE);
     gtk_tree_view_column_add_attribute(col, renderer, "active", 2);
     gtk_tree_view_append_column(GTK_TREE_VIEW(midiview), col);
-    g_signal_connect(GTK_OBJECT(renderer), "toggled", G_CALLBACK(midiconnector_clicked), (gpointer*)this);
+    g_signal_connect(renderer, "toggled", G_CALLBACK(midiconnector_clicked), (gpointer*)this);
     
     gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(midiview)),
                                 GTK_SELECTION_NONE);
@@ -612,7 +612,7 @@ void calf_connector::create_window()
         inports[c].type = 0;
         inports[c].id = c;
         inports[c].connector = this;
-        g_signal_connect(GTK_OBJECT(in), "clicked", G_CALLBACK(inport_clicked), (gpointer*)&inports[c]);
+        g_signal_connect(in, "clicked", G_CALLBACK(inport_clicked), (gpointer*)&inports[c]);
         if (!first) {
             first = GTK_RADIO_BUTTON(in);
             active_in = &inports[c];
@@ -642,7 +642,7 @@ void calf_connector::create_window()
         outports[c].type = 1;
         outports[c].id = c;
         outports[c].connector = this;
-        g_signal_connect(GTK_OBJECT(out), "clicked", G_CALLBACK(outport_clicked), (gpointer*)&outports[c]);
+        g_signal_connect(out, "clicked", G_CALLBACK(outport_clicked), (gpointer*)&outports[c]);
         if (!first) {
             first = GTK_RADIO_BUTTON(out);
             active_out = &outports[c];
@@ -666,7 +666,7 @@ void calf_connector::create_window()
         midiports[c].type = 2;
         midiports[c].id = c;
         midiports[c].connector = this;
-        g_signal_connect(GTK_OBJECT(mid), "clicked", G_CALLBACK(midiport_clicked), (gpointer*)&midiports[c]);
+        g_signal_connect(mid, "clicked", G_CALLBACK(midiport_clicked), (gpointer*)&midiports[c]);
         gtk_widget_show(GTK_WIDGET(mid));
         if (!first) {
             first = GTK_RADIO_BUTTON(mid);

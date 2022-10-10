@@ -376,24 +376,24 @@ calf_knob_key_press (GtkWidget *widget, GdkEventKey *event)
     gtk_widget_queue_draw(widget);
     switch(event->keyval)
     {
-        case GDK_Home:
+        case GDK_KEY_Home:
             gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_lower(adj));
             return TRUE;
 
-        case GDK_End:
+        case GDK_KEY_End:
             gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_upper(adj));
             return TRUE;
 
-        case GDK_Up:
+        case GDK_KEY_Up:
             calf_knob_incr(widget, 0);
             return TRUE;
 
-        case GDK_Down:
+        case GDK_KEY_Down:
             calf_knob_incr(widget, 1);
             return TRUE;
             
-        case GDK_Shift_L:
-        case GDK_Shift_R:
+        case GDK_KEY_Shift_L:
+        case GDK_KEY_Shift_R:
             self->start_value = gtk_range_get_value(GTK_RANGE(widget));
             self->start_y = self->last_y;
             return TRUE;
@@ -408,7 +408,7 @@ calf_knob_key_release (GtkWidget *widget, GdkEventKey *event)
     g_assert(CALF_IS_KNOB(widget));
     CalfKnob *self = CALF_KNOB(widget);
 
-    if(event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R)
+    if(event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R)
     {
         self->start_value = gtk_range_get_value(GTK_RANGE(widget));
         self->start_y = self->last_y;
@@ -583,7 +583,7 @@ GtkWidget *calf_knob_new_with_adjustment(GtkAdjustment *_adjustment)
     GtkWidget *widget = GTK_WIDGET( g_object_new (CALF_TYPE_KNOB, NULL ));
     if (widget) {
         gtk_range_set_adjustment(GTK_RANGE(widget), _adjustment);
-        g_signal_connect(GTK_OBJECT(widget), "value-changed", G_CALLBACK(calf_knob_value_changed), widget);
+        g_signal_connect(widget, "value-changed", G_CALLBACK(calf_knob_value_changed), widget);
     }
     return widget;
 }
