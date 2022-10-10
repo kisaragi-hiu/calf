@@ -115,6 +115,29 @@ calf_curve_size_request (GtkWidget *widget,
 }
 
 static void
+calf_curve_get_preferred_width (GtkWidget *widget,
+                                gint *minimal_width,
+                                gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_curve_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_curve_get_preferred_height (GtkWidget *widget,
+                                 gint *minimal_height,
+                                 gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_curve_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
+
+static void
 calf_curve_size_allocate (GtkWidget *widget,
                            GtkAllocation *allocation)
 {
@@ -254,7 +277,9 @@ calf_curve_class_init (CalfCurveClass *klass)
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->realize = calf_curve_realize;
     widget_class->draw = calf_curve_draw;
-    widget_class->size_request = calf_curve_size_request;
+    // widget_class->size_request = calf_curve_size_request;
+    widget_class->get_preferred_width = calf_curve_get_preferred_width;
+    widget_class->get_preferred_height = calf_curve_get_preferred_height;
     widget_class->size_allocate = calf_curve_size_allocate;
     widget_class->button_press_event = calf_curve_button_press;
     widget_class->button_release_event = calf_curve_button_release;

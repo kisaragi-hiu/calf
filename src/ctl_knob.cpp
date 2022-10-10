@@ -291,7 +291,7 @@ calf_knob_draw (GtkWidget *widget, cairo_t *cr)
 
 static void
 calf_knob_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
+                        GtkRequisition *requisition)
 {
     g_assert(CALF_IS_KNOB(widget));
     CalfKnob *self = CALF_KNOB(widget);
@@ -300,6 +300,29 @@ calf_knob_size_request (GtkWidget *widget,
     requisition->width  = gdk_pixbuf_get_width(self->knob_image);
     requisition->height = gdk_pixbuf_get_height(self->knob_image);
 }
+
+static void
+calf_knob_get_preferred_width (GtkWidget *widget,
+                               gint *minimal_width,
+                               gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_knob_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_knob_get_preferred_height (GtkWidget *widget,
+                                gint *minimal_height,
+                                gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_knob_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
 
 void
 calf_knob_set_size (CalfKnob *self, int size)
@@ -521,7 +544,9 @@ calf_knob_class_init (CalfKnobClass *klass)
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_knob_draw;
-    widget_class->size_request = calf_knob_size_request;
+    // widget_class->size_request = calf_knob_size_request;
+    widget_class->get_preferred_width = calf_knob_get_preferred_width;
+    widget_class->get_preferred_height = calf_knob_get_preferred_height;
     widget_class->enter_notify_event = calf_knob_enter;
     widget_class->leave_notify_event = calf_knob_leave;
     widget_class->button_press_event = calf_knob_button_press;

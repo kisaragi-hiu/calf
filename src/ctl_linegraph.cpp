@@ -1349,16 +1349,16 @@ void calf_line_graph_set_square(CalfLineGraph *graph, bool is_square)
     graph->is_square = is_square;
 }
 
-static void
-calf_line_graph_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
-{
-    g_assert(CALF_IS_LINE_GRAPH(widget));
+// static void
+// calf_line_graph_size_request (GtkWidget *widget,
+//                               GtkRequisition *requisition)
+// {
+//     g_assert(CALF_IS_LINE_GRAPH(widget));
     
-    CalfLineGraph *lg = CALF_LINE_GRAPH(widget);
+//     CalfLineGraph *lg = CALF_LINE_GRAPH(widget);
     
-    if (lg->debug) printf("size request\n");
-}
+//     if (lg->debug) printf("size request\n");
+// }
 
 static void
 calf_line_graph_size_allocate (GtkWidget *widget,
@@ -1405,7 +1405,9 @@ calf_line_graph_class_init (CalfLineGraphClass *klass)
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_line_graph_draw;
-    widget_class->size_request = calf_line_graph_size_request;
+    // widget_class->size_request = calf_line_graph_size_request;
+    // widget_class->get_preferred_width = calf_line_graph_get_preferred_width;
+    // widget_class->get_preferred_height = calf_line_graph_get_preferred_height;
     widget_class->size_allocate = calf_line_graph_size_allocate;
     widget_class->button_press_event = calf_line_graph_button_press;
     widget_class->button_release_event = calf_line_graph_button_release;

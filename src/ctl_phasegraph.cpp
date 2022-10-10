@@ -235,13 +235,13 @@ calf_phase_graph_draw (GtkWidget *widget, cairo_t *cr)
     return TRUE;
 }
 
-static void
-calf_phase_graph_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
-{
-    g_assert(CALF_IS_PHASE_GRAPH(widget));
-    // CalfLineGraph *lg = CALF_LINE_GRAPH(widget);
-}
+// static void
+// calf_phase_graph_size_request (GtkWidget *widget,
+//                            GtkRequisition *requisition)
+// {
+//     g_assert(CALF_IS_PHASE_GRAPH(widget));
+//     // CalfLineGraph *lg = CALF_LINE_GRAPH(widget);
+// }
 
 static void
 calf_phase_graph_size_allocate (GtkWidget *widget,
@@ -275,7 +275,9 @@ calf_phase_graph_class_init (CalfPhaseGraphClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_phase_graph_draw;
-    widget_class->size_request = calf_phase_graph_size_request;
+    // widget_class->size_request = calf_phase_graph_size_request;
+    // widget_class->get_preferred_width = calf_phase_graph_get_preferred_width;
+    // widget_class->get_preferred_height = calf_phase_graph_get_preferred_height;
     widget_class->size_allocate = calf_phase_graph_size_allocate;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",

@@ -147,7 +147,7 @@ calf_keyboard_realize(GtkWidget *widget)
 
 static void
 calf_keyboard_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
+                            GtkRequisition *requisition)
 {
     CalfKeyboard *self = CALF_KEYBOARD(widget);
     g_assert(CALF_IS_KEYBOARD(widget));
@@ -155,6 +155,29 @@ calf_keyboard_size_request (GtkWidget *widget,
     requisition->width = 11 * self->nkeys + 1;
     requisition->height = 40;
 }
+
+static void
+calf_keyboard_get_preferred_width (GtkWidget *widget,
+                                   gint *minimal_width,
+                                   gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_keyboard_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_keyboard_get_preferred_height (GtkWidget *widget,
+                                    gint *minimal_height,
+                                    gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_keyboard_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
 
 static void
 calf_keyboard_size_allocate (GtkWidget *widget,
@@ -266,7 +289,9 @@ calf_keyboard_class_init (CalfKeyboardClass *klass)
     widget_class->realize = calf_keyboard_realize;
     widget_class->size_allocate = calf_keyboard_size_allocate;
     widget_class->draw = calf_keyboard_draw;
-    widget_class->size_request = calf_keyboard_size_request;
+    // widget_class->size_request = calf_keyboard_size_request;
+    widget_class->get_preferred_width = calf_keyboard_get_preferred_width;
+    widget_class->get_preferred_height = calf_keyboard_get_preferred_height;
     widget_class->button_press_event = calf_keyboard_button_press;
     widget_class->button_release_event = calf_keyboard_button_release;
     widget_class->motion_notify_event = calf_keyboard_pointer_motion;

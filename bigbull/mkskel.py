@@ -93,6 +93,28 @@ static void
 }
 
 static void
+[preftype]_get_preferred_width (GtkWidget *widget,
+                                 gint *minimal_width,
+                                 gint *natural_width)
+{
+    GtkRequisition requisition;
+    [preftype]_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+[preftype]_get_preferred_height (GtkWidget *widget,
+                                  gint *minimal_height,
+                                  gint *natural_height)
+{
+    GtkRequisition requisition;
+    [preftype]_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
+static void
 [preftype]_size_allocate (GtkWidget *widget,
                            GtkAllocation *allocation)
 {
@@ -110,7 +132,9 @@ static void
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->realize = [preftype]_realize;
     widget_class->draw = [preftype]_draw;
-    widget_class->size_request = [preftype]_size_request;
+    // widget_class->size_request = [preftype]_size_request;
+    widget_class->get_preferred_width = [preftype]_get_preferred_width;
+    widget_class->get_preferred_height = [preftype]_get_preferred_height;
     widget_class->size_allocate = [preftype]_size_allocate;
     // widget_class->button_press_event = [preftype]_button_press;
     // widget_class->button_release_event = [preftype]_button_release;

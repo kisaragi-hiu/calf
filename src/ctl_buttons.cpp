@@ -68,6 +68,29 @@ calf_toggle_size_request (GtkWidget *widget,
     requisition->height = gtk_widget_get_style(widget)->ythickness;
 }
 
+static void
+calf_toggle_get_preferred_width (GtkWidget *widget,
+                                 gint *minimal_width,
+                                 gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_toggle_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_toggle_get_preferred_height (GtkWidget *widget,
+                                  gint *minimal_height,
+                                  gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_toggle_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
+
 static gboolean
 calf_toggle_button_press (GtkWidget *widget, GdkEventButton *event)
 {
@@ -101,7 +124,9 @@ calf_toggle_class_init (CalfToggleClass *klass)
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_toggle_draw;
-    widget_class->size_request = calf_toggle_size_request;
+    // widget_class->size_request = calf_toggle_size_request;
+    widget_class->get_preferred_width = calf_toggle_get_preferred_width;
+    widget_class->get_preferred_height = calf_toggle_get_preferred_height;
     widget_class->button_press_event = calf_toggle_button_press;
     widget_class->key_press_event = calf_toggle_key_press;
 }
@@ -567,12 +592,38 @@ calf_tap_button_size_request (GtkWidget *widget,
     requisition->width  = 70;
     requisition->height = 70;
 }
+
+static void
+calf_tap_button_get_preferred_width (GtkWidget *widget,
+                                     gint *minimal_width,
+                                     gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_tap_button_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_tap_button_get_preferred_height (GtkWidget *widget,
+                                      gint *minimal_height,
+                                      gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_tap_button_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
+
 static void
 calf_tap_button_class_init (CalfTapButtonClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_tap_button_draw;
-    widget_class->size_request = calf_tap_button_size_request;
+    // widget_class->size_request = calf_tap_button_size_request;
+    widget_class->get_preferred_width = calf_tap_button_get_preferred_width;
+    widget_class->get_preferred_height = calf_tap_button_get_preferred_height;
 }
 static void
 calf_tap_button_init (CalfTapButton *self)

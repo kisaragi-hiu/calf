@@ -144,7 +144,7 @@ calf_meter_scale_draw (GtkWidget *widget, cairo_t *cr)
 
 static void
 calf_meter_scale_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
+                               GtkRequisition *requisition)
 {
     g_assert(CALF_IS_METER_SCALE(widget));
     CalfMeterScale *self = CALF_METER_SCALE(widget);
@@ -158,11 +158,36 @@ calf_meter_scale_size_request (GtkWidget *widget,
 }
 
 static void
+calf_meter_scale_get_preferred_width (GtkWidget *widget,
+                                      gint *minimal_width,
+                                      gint *natural_width)
+{
+    GtkRequisition requisition;
+    calf_meter_scale_size_request(widget, &requisition);
+    *minimal_width = requisition.width;
+    *natural_width = requisition.width;
+}
+
+static void
+calf_meter_scale_get_preferred_height (GtkWidget *widget,
+                                       gint *minimal_height,
+                                       gint *natural_height)
+{
+    GtkRequisition requisition;
+    calf_meter_scale_size_request(widget, &requisition);
+    *minimal_height = requisition.height;
+    *natural_height = requisition.height;
+}
+
+
+static void
 calf_meter_scale_class_init (CalfMeterScaleClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->draw = calf_meter_scale_draw;
-    widget_class->size_request = calf_meter_scale_size_request;
+    // widget_class->size_request = calf_meter_scale_size_request;
+    widget_class->get_preferred_width = calf_meter_scale_get_preferred_width;
+    widget_class->get_preferred_height = calf_meter_scale_get_preferred_height;
 }
 
 static void

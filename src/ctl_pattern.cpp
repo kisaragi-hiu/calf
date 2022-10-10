@@ -377,13 +377,6 @@ calf_pattern_leave (GtkWidget *widget, GdkEventCrossing *event)
 }
 
 static void
-calf_pattern_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
-{
-    g_assert(CALF_IS_PATTERN(widget));
-}
-
-static void
 calf_pattern_size_allocate (GtkWidget *widget,
                             GtkAllocation *allocation)
 {
@@ -418,7 +411,9 @@ calf_pattern_class_init (CalfPatternClass *klass)
     widget_class->scroll_event = calf_pattern_scroll;
     widget_class->leave_notify_event = calf_pattern_leave;
     widget_class->size_allocate = calf_pattern_size_allocate;
-    widget_class->size_request = calf_pattern_size_request;
+    // widget_class->size_request = calf_pattern_size_request;
+    // widget_class->get_preferred_width = calf_pattern_get_preferred_width;
+    // widget_class->get_preferred_height = calf_pattern_get_preferred_height;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",
         0, 24, 4, GParamFlags(G_PARAM_READWRITE)));
