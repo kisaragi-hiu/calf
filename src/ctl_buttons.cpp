@@ -74,11 +74,11 @@ calf_toggle_button_press (GtkWidget *widget, GdkEventButton *event)
 {
     g_assert(CALF_IS_TOGGLE(widget));
     GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-    if (gtk_range_get_value(GTK_RANGE(widget)) == adj->lower)
+    if (gtk_range_get_value(GTK_RANGE(widget)) == gtk_adjustment_get_lower(adj))
     {
-        gtk_range_set_value(GTK_RANGE(widget), adj->upper);
+        gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_upper(adj));
     } else {
-        gtk_range_set_value(GTK_RANGE(widget), adj->lower);
+        gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_lower(adj));
     }
     return TRUE;
 }

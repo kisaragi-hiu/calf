@@ -199,8 +199,9 @@ calf_fader_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_clip(c);
         
         // position
-        double r0  = range->adjustment->upper - range->adjustment->lower;
-        double v0 = range->adjustment->value - range->adjustment->lower;
+        GtkAdjustment *adj = gtk_range_get_adjustment(range);
+        double r0 = gtk_adjustment_get_upper(adj) - gtk_adjustment_get_lower(adj);
+        double v0 = gtk_adjustment_get_value(adj) - gtk_adjustment_get_lower(adj);
         if ((horiz and gtk_range_get_inverted(range))
         or (!horiz and gtk_range_get_inverted(range)))
             v0 = -v0 + r0;

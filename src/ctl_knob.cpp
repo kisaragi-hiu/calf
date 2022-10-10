@@ -179,7 +179,10 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     tick  = 0;
     nend  = 0.;
     deg = last = start;
-    phase = (adj->value - adj->lower) * base / (adj->upper - adj->lower) + start;
+    gdouble adj_value = gtk_adjustment_get_value(adj);
+    gdouble adj_upper = gtk_adjustment_get_upper(adj);
+    gdouble adj_lower = gtk_adjustment_get_lower(adj);
+    phase = (adj_value - adj_lower) * base / (adj_upper - adj_lower) + start;
     
     // draw pin
     state = GTK_STATE_ACTIVE;
@@ -338,10 +341,14 @@ calf_knob_incr (GtkWidget *widget, int dir_down)
     g_assert(CALF_IS_KNOB(widget));
     CalfKnob *self = CALF_KNOB(widget);
     GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
+    gdouble adj_lower = gtk_adjustment_get_lower(adj);
+    gdouble adj_upper = gtk_adjustment_get_upper(adj);
+    gdouble adj_value = gtk_adjustment_get_value(adj);
+    gdouble adj_step_increment = gtk_adjustment_get_step_increment(adj);
 
-    int oldstep = (int)(0.5f + (adj->value - adj->lower) / adj->step_increment);
+    int oldstep = (int)(0.5f + (adj_value - adj_lower) / adj_step_increment);
     int step;
-    int nsteps = (int)(0.5f + (adj->upper - adj->lower) / adj->step_increment); // less 1 actually
+    int nsteps = (int)(0.5f + (adj_upper - adj_lower) / adj_step_increment); // less 1 actually
     if (dir_down)
         step = oldstep - 1;
     else
@@ -352,7 +359,7 @@ calf_knob_incr (GtkWidget *widget, int dir_down)
         step = nsteps - (nsteps - step) % nsteps;
 
     // trying to reduce error cumulation here, by counting from lowest or from highest
-    float value = adj->lower + step * double(adj->upper - adj->lower) / nsteps;
+    float value = adj_lower + step * double(adj_upper - adj_lower) / nsteps;
     gtk_range_set_value(GTK_RANGE(widget), value);
     // printf("step %d:%d nsteps %d value %f:%f\n", oldstep, step, nsteps, oldvalue, value);
 }
@@ -368,11 +375,11 @@ calf_knob_key_press (GtkWidget *widget, GdkEventKey *event)
     switch(event->keyval)
     {
         case GDK_Home:
-            gtk_range_set_value(GTK_RANGE(widget), adj->lower);
+            gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_lower(adj));
             return TRUE;
 
         case GDK_End:
-            gtk_range_set_value(GTK_RANGE(widget), adj->upper);
+            gtk_range_set_value(GTK_RANGE(widget), gtk_adjustment_get_upper(adj));
             return TRUE;
 
         case GDK_Up:
