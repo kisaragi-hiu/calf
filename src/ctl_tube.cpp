@@ -56,10 +56,10 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
         // And render the meterstuff again.
         cairo_t *cache_cr = cairo_create( self->cache_surface );
         // theme background for reduced width and round borders
-//        if(widget->style->bg_pixmap[0] == NULL) {
+//        if(gtk_widget_get_style(widget)->bg_pixmap[0] == NULL) {
             gdk_cairo_set_source_color(cache_cr,&style->bg[GTK_STATE_NORMAL]);
 //        } else {
-//            gdk_cairo_set_source_pixbuf(cache_cr, GDK_PIXBUF(widget->style->bg_pixmap[0]), widget->allocation.x, widget->allocation.y + 20);
+//            gdk_cairo_set_source_pixbuf(cache_cr, GDK_PIXBUF(gtk_widget_get_style(widget)->bg_pixmap[0]), allocation.x, allocation.y + 20);
 //        }
         cairo_paint(cache_cr);
         
@@ -187,7 +187,7 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
 
 static void
 calf_tube_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
+                        GtkRequisition *requisition)
 {
     g_assert(CALF_IS_TUBE(widget));
 
@@ -196,13 +196,13 @@ calf_tube_size_request (GtkWidget *widget,
         case 1:
             switch(self->size) {
                 case 1:
-                    widget->requisition.width = 82;
-                    widget->requisition.height = 130;
+                    requisition->width = 82;
+                    requisition->height = 130;
                     break;
                 default:
                 case 2:
-                    widget->requisition.width = 130;
-                    widget->requisition.height = 210;
+                    requisition->width = 130;
+                    requisition->height = 210;
                     break;
             }
             break;
@@ -210,13 +210,13 @@ calf_tube_size_request (GtkWidget *widget,
         case 2:
             switch(self->size) {
                 case 1:
-                    widget->requisition.width = 130;
-                    widget->requisition.height = 82;
+                    requisition->width = 130;
+                    requisition->height = 82;
                     break;
                 default:
                 case 2:
-                    widget->requisition.width = 210;
-                    widget->requisition.height = 130;
+                    requisition->width = 210;
+                    requisition->height = 130;
                     break;
             }
             break;
@@ -225,7 +225,7 @@ calf_tube_size_request (GtkWidget *widget,
 
 static void
 calf_tube_size_allocate (GtkWidget *widget,
-                           GtkAllocation *allocation)
+                         GtkAllocation *allocation)
 {
     g_assert(CALF_IS_TUBE(widget));
     CalfTube *tube = CALF_TUBE(widget);

@@ -62,11 +62,11 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
 
 static void
 calf_toggle_size_request (GtkWidget *widget,
-                           GtkRequisition *requisition)
+                          GtkRequisition *requisition)
 {
     g_assert(CALF_IS_TOGGLE(widget));
-    requisition->width  = widget->style->xthickness;
-    requisition->height = widget->style->ythickness;
+    requisition->width  = gtk_widget_get_style(widget)->xthickness;
+    requisition->height = gtk_widget_get_style(widget)->ythickness;
 }
 
 static gboolean
@@ -148,9 +148,11 @@ static gboolean calf_toggle_value_changed(gpointer obj)
     CalfToggle *self = CALF_TOGGLE(widget);
     float sx = self->size ? self->size : 1.f / 3.f * 2.f;
     float sy = self->size ? self->size : 1;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     gtk_widget_queue_draw_area(widget,
-                               widget->allocation.x - sx * 2,
-                               widget->allocation.y - sy * 3,
+                               allocation.x - sx * 2,
+                               allocation.y - sy * 3,
                                self->size * 34,
                                self->size * 26);
     return FALSE;
@@ -221,15 +223,17 @@ calf_button_expose (GtkWidget *widget, GdkEventExpose *event)
     if (gtk_widget_is_drawable (widget)) {
         
         GdkWindow *window    = gtk_widget_get_window(widget);
-        GtkWidget *child     = GTK_BIN (widget)->child;
+        GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
         cairo_t *c           = gdk_cairo_create(GDK_DRAWABLE(window));
         
-        int x  = widget->allocation.x;
-        int y  = widget->allocation.y;
-        int sx = widget->allocation.width;
-        int sy = widget->allocation.height;
-        int ox = widget->style->xthickness;
-        int oy = widget->style->ythickness;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        int x  = allocation.x;
+        int y  = allocation.y;
+        int sx = allocation.width;
+        int sy = allocation.height;
+        int ox = gtk_widget_get_style(widget)->xthickness;
+        int oy = gtk_widget_get_style(widget)->ythickness;
         int bx = x + ox + 1;
         int by = y + oy + 1;
         int bw = sx - 2 * ox - 2;
@@ -267,9 +271,9 @@ calf_button_expose (GtkWidget *widget, GdkEventExpose *event)
             gtk_widget_style_get(widget, "indicator", &pinh, NULL);
             get_text_color(widget, NULL, &r, &g, &b);
             float a;
-            if (widget->state == GTK_STATE_PRELIGHT)
+            if (gtk_widget_get_state(widget) == GTK_STATE_PRELIGHT)
                 gtk_widget_style_get(widget, "alpha-prelight", &a, NULL);
-            else if (widget->state == GTK_STATE_ACTIVE)
+            else if (gtk_widget_get_state(widget) == GTK_STATE_ACTIVE)
                 gtk_widget_style_get(widget, "alpha-active", &a, NULL);
             else
                 gtk_widget_style_get(widget, "alpha-normal", &a, NULL);
@@ -539,8 +543,10 @@ calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
         
     int width = gdk_pixbuf_get_width(self->image[0]);
     int height = gdk_pixbuf_get_height(self->image[0]);
-    int x = widget->allocation.x + widget->allocation.width / 2 - width / 2;
-    int y = widget->allocation.y + widget->allocation.height / 2 - height / 2;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    int x = allocation.x + allocation.width / 2 - width / 2;
+    int y = allocation.y + allocation.height / 2 - height / 2;
     
     cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
     gdk_cairo_set_source_pixbuf (cr, self->image[self->state], x, y);

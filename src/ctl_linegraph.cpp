@@ -515,8 +515,10 @@ calf_line_graph_create_surfaces (GtkWidget *widget)
     
     if (lg->debug) printf("{create surfaces}\n");
     
-    int width  = widget->allocation.width;
-    int height = widget->allocation.height;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    int width  = allocation.width;
+    int height = allocation.height;
     
     // the size of the "real" drawing area
     lg->size_x = width  - lg->pad_x * 2;
@@ -663,10 +665,12 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     // recreate surfaces if someone needs it (init of the widget,
     // resizing the window..)
     if (lg->recreate_surfaces) {
-        lg->pad_x = widget->style->xthickness;
-        lg->pad_y = widget->style->ythickness;
-        lg->x = widget->allocation.x;
-        lg->y = widget->allocation.y;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        lg->pad_x = gtk_widget_get_style(widget)->xthickness;
+        lg->pad_y = gtk_widget_get_style(widget)->ythickness;
+        lg->x = allocation.x;
+        lg->y = allocation.y;
         float radius, bevel, shadow, lights, dull;
         gtk_widget_style_get(widget, "border-radius", &radius, "bevel",  &bevel, "shadow", &shadow, "lights", &lights, "dull", &dull, NULL);
     
@@ -1368,10 +1372,11 @@ calf_line_graph_size_allocate (GtkWidget *widget,
     GtkWidgetClass *parent_class = (GtkWidgetClass *) g_type_class_peek_parent( CALF_LINE_GRAPH_GET_CLASS( lg ) );
     
     // remember the allocation
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
     
     // reset the allocation if a square widget is requested
-    GtkAllocation &a = widget->allocation;
+    GtkAllocation a;
+    gtk_widget_get_allocation(widget, &a);
     if (lg->is_square)
     {
         if (a.width > a.height)
@@ -1453,8 +1458,8 @@ calf_line_graph_init (CalfLineGraph *lg)
     
     widget->requisition.width  = 40;
     widget->requisition.height = 40;
-    lg->pad_x                = widget->style->xthickness;
-    lg->pad_y                = widget->style->ythickness;
+    lg->pad_x                = gtk_widget_get_style(widget)->xthickness;
+    lg->pad_y                = gtk_widget_get_style(widget)->ythickness;
     lg->force_cache          = true;
     lg->force_redraw         = false;
     lg->zoom                 = 1;

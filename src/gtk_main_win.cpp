@@ -612,7 +612,7 @@ void gtk_main_window::sort_strips()
                 break;
         }
         bool rem = false;
-        if(i->second->strip_table->parent != NULL) {
+        if(gtk_widget_get_parent(i->second->strip_table) != NULL) {
             rem = true;
             g_object_ref(i->second->strip_table);
             gtk_container_remove(GTK_CONTAINER(strips_table), GTK_WIDGET(i->second->strip_table));
@@ -869,7 +869,7 @@ void gtk_main_window::create()
     gtk_table_set_col_spacings(GTK_TABLE(strips_table), 0);
     gtk_table_set_row_spacings(GTK_TABLE(strips_table), 0);
     
-    for(GList *p = GTK_TABLE(strips_table)->children; p != NULL; p = p->next)
+    for(GList *p = gtk_container_get_children(GTK_CONTAINER(strips_table)); p != NULL; p = p->next)
     {
         GtkTableChild *c = (GtkTableChild *)p->data;
         if (c->top_attach == 0) {

@@ -47,12 +47,14 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
         cairo_pattern_t *pat = NULL;
         
-        int x  = widget->allocation.x;
-        int y  = widget->allocation.y;
-        int sx = widget->allocation.width;
-        int sy = widget->allocation.height;
-        int tx = widget->style->xthickness;
-        int ty = widget->style->ythickness;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        int x  = allocation.x;
+        int y  = allocation.y;
+        int sx = allocation.width;
+        int sy = allocation.height;
+        int tx = gtk_widget_get_style(widget)->xthickness;
+        int ty = gtk_widget_get_style(widget)->ythickness;
         int lh = 19;
         int bh = lh + 2 * ty;
         

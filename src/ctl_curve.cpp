@@ -103,7 +103,7 @@ calf_curve_realize(GtkWidget *widget)
     gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window (widget), &attributes, GDK_WA_X | GDK_WA_Y));
 
     gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
-    widget->style = gtk_style_attach(widget->style, gtk_widget_get_window(widget));
+    gtk_widget_set_style(widget, gtk_style_attach(gtk_widget_get_style(widget), gtk_widget_get_window(widget)));
 }
 
 static void
@@ -288,13 +288,17 @@ calf_curve_init (CalfCurve *self)
 }
 
 void CalfCurve::log2phys(float &x, float &y) {
-    x = (x - x0) / (x1 - x0) * (parent.allocation.width - 2) + 1;
-    y = (y - y0) / (y1 - y0) * (parent.allocation.height - 2) + 1;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(&parent, &allocation);
+    x = (x - x0) / (x1 - x0) * (allocation.width - 2) + 1;
+    y = (y - y0) / (y1 - y0) * (allocation.height - 2) + 1;
 }
 
 void CalfCurve::phys2log(float &x, float &y) {
-    x = x0 + (x - 1) * (x1 - x0) / (parent.allocation.width - 2);
-    y = y0 + (y - 1) * (y1 - y0) / (parent.allocation.height - 2);
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(&parent, &allocation);
+    x = x0 + (x - 1) * (x1 - x0) / (allocation.width - 2);
+    y = y0 + (y - 1) * (y1 - y0) / (allocation.height - 2);
 }
 
 void CalfCurve::clip(int pt, float &x, float &y, bool &hide)

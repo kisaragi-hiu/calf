@@ -46,15 +46,17 @@ calf_frame_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
         cairo_text_extents_t extents;
         
-        int ox = widget->allocation.x;
-        int oy = widget->allocation.y;
-        int sx = widget->allocation.width;
-        int sy = widget->allocation.height;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        int ox = allocation.x;
+        int oy = allocation.y;
+        int sx = allocation.width;
+        int sy = allocation.height;
         
         float rad;
         gtk_widget_style_get(widget, "border-radius", &rad, NULL);
     
-        double pad  = widget->style->xthickness;
+        double pad  = gtk_widget_get_style(widget)->xthickness;
         double txp  = 4;
         double m    = 0.5;
         double size = 10;

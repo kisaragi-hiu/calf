@@ -113,8 +113,10 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     if (self->debug > 1)
         printf("gtkrc: rm %.2f | rw %.2f | tm %.2f | tw %.2f | tl %.2f\n", rmargin, rwidth, tmargin, twidth, tlength);
     
-    double ox   = widget->allocation.x + (widget->allocation.width - iw) / 2;
-    double oy   = widget->allocation.y + (widget->allocation.height - ih) / 2;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    double ox   = allocation.x + (allocation.width - iw) / 2;
+    double oy   = allocation.y + (allocation.height - ih) / 2;
     double size = iw;
     float  rad  = size / 2;
     double xc   = ox + rad;
@@ -500,7 +502,7 @@ calf_knob_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
         {
             gtk_range_set_value(GTK_RANGE(widget), self->start_value - (event->y - self->start_y) / scale);
         }
-        moved = TRUE;
+      moved = TRUE;
     }
     self->last_y = event->y;
     return moved;

@@ -151,12 +151,14 @@ calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
     CalfPattern *p = CALF_PATTERN(widget);
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     if (p->force_redraw) {
-        p->pad_x  = widget->style->xthickness;
-        p->pad_y  = widget->style->ythickness;
-        p->x      = widget->allocation.x;
-        p->y      = widget->allocation.y;
-        p->width  = widget->allocation.width;
-        p->height = widget->allocation.height;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        p->pad_x  = gtk_widget_get_style(widget)->xthickness;
+        p->pad_y  = gtk_widget_get_style(widget)->ythickness;
+        p->x      = allocation.x;
+        p->y      = allocation.y;
+        p->width  = allocation.width;
+        p->height = allocation.height;
         p->size_x = p->width - 2 * p->pad_x;
         p->size_y = p->height - 2 * p->pad_y;
         float radius, bevel, shadow, lights, dull;
@@ -384,12 +386,13 @@ calf_pattern_size_request (GtkWidget *widget,
 
 static void
 calf_pattern_size_allocate (GtkWidget *widget,
-                           GtkAllocation *allocation)
+                            GtkAllocation *allocation)
 {
     g_assert(CALF_IS_PATTERN(widget));
     CalfPattern *p = CALF_PATTERN(widget);
     //GtkWidgetClass *parent_class = (GtkWidgetClass *) g_type_class_peek_parent( CALF_PATTERN_GET_CLASS( p ) );
-    //GtkAllocation &a = widget->allocation;
+    //GtkAllocation a;
+    //gtk_widget_get_allocation(widget, &a);
     int sx = allocation->width  - p->pad_x * 2;
     int sy = allocation->height - p->pad_y * 2;
     if (sx != p->size_x or sy != p->size_y) {
@@ -401,7 +404,7 @@ calf_pattern_size_allocate (GtkWidget *widget,
             CAIRO_FORMAT_ARGB32, allocation->width, allocation->height );
         p->force_redraw = true;
     }
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
 }
 
 static void
@@ -458,8 +461,8 @@ calf_pattern_init (CalfPattern *p)
     
     widget->requisition.width  = 300;
     widget->requisition.height = 60;
-    p->pad_x                = widget->style->xthickness;
-    p->pad_y                = widget->style->ythickness;
+    p->pad_x                = gtk_widget_get_style(widget)->xthickness;
+    p->pad_y                = gtk_widget_get_style(widget)->ythickness;
     p->force_redraw         = false;
     p->beats                = 1;
     p->bars                 = 1;

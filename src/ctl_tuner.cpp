@@ -108,9 +108,12 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
     
     //printf("%d %f\n", tuner->note, tuner->cents);
     
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     // dimensions
     int ox = 5, oy = 5;
-    int sx = widget->allocation.width - ox * 2, sy = widget->allocation.height - oy * 2;
+    int sx = allocation.width - ox * 2;
+    int sy = allocation.height - oy * 2;
     int marg = 10;
     int fpt  = 9;
     float fsize = fpt * sy / 25; // 9pt @ 25px height
@@ -123,10 +126,11 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
         // looks like its either first call or the widget has been resized.
         // create the background surface (stolen from line graph)...
         cairo_surface_t *window_surface = cairo_get_target(c);
-        tuner->background = cairo_surface_create_similar(window_surface, 
-                                  CAIRO_CONTENT_COLOR,
-                                  widget->allocation.width,
-                                  widget->allocation.height );
+        tuner->background =
+            cairo_surface_create_similar(window_surface,
+                                         CAIRO_CONTENT_COLOR,
+                                         allocation.width,
+                                         allocation.height );
         
         // ...and draw some bling bling onto it...
         ctx_back = cairo_create(tuner->background);
@@ -218,7 +222,7 @@ calf_tuner_size_allocate (GtkWidget *widget,
         cairo_surface_destroy(lg->background);
     lg->background = NULL;
     
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
 }
 
 static void

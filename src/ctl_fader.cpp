@@ -43,11 +43,13 @@ void calf_fader_set_layout(GtkWidget *widget)
     int slength;
     gtk_widget_style_get(widget, "slider-length", &slength, NULL);
     
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     // widget layout
-    l.x = widget->allocation.x + t.x;
-    l.y = widget->allocation.y + t.y;
-    l.w = t.width; //widget->allocation.width;
-    l.h = t.height; //widget->allocation.height;
+    l.x = allocation.x + t.x;
+    l.y = allocation.y + t.y;
+    l.w = t.width; //allocation.width;
+    l.h = t.height; //allocation.height;
     
     // image layout
     l.iw = gdk_pixbuf_get_width(fader->image);
@@ -110,7 +112,7 @@ calf_fader_new(const int horiz = 0, const int size = 2, const double min = 0, co
     GtkWidget *widget = GTK_WIDGET( g_object_new (CALF_TYPE_FADER, NULL ));
     CalfFader *self = CALF_FADER(widget);
     
-    GTK_RANGE(widget)->orientation = horiz ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL;
+    gtk_orientable_set_orientation(GTK_ORIENTABLE(GTK_RANGE(widget)), horiz ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
     gtk_range_set_adjustment(GTK_RANGE(widget), GTK_ADJUSTMENT(adj));
     gtk_scale_set_digits(GTK_SCALE(widget), digits);
     
@@ -242,7 +244,7 @@ calf_fader_expose (GtkWidget *widget, GdkEventExpose *event)
         }
         
         // slider
-        if (fader->hover or widget->state == GTK_STATE_ACTIVE) {
+        if (fader->hover or gtk_widget_get_state(widget) == GTK_STATE_ACTIVE) {
             cairo_rectangle(c, l.t1x2, l.t1y2, l.t1w, l.t1h);
             gdk_cairo_set_source_pixbuf(c, i, l.t1x2 - l.t1x1, l.t1y2 - l.t1y1);
         } else {
@@ -253,12 +255,12 @@ calf_fader_expose (GtkWidget *widget, GdkEventExpose *event)
         
         
         // draw value label
-        if (scale->draw_value) {
+        if (gtk_scale_get_draw_value(scale)) {
             PangoLayout *layout;
             gint _x, _y;
             layout = gtk_scale_get_layout (scale);
             gtk_scale_get_layout_offsets (scale, &_x, &_y);
-            gtk_paint_layout (widget->style, window, GTK_STATE_NORMAL, FALSE, NULL,
+            gtk_paint_layout (gtk_widget_get_style(widget), window, GTK_STATE_NORMAL, FALSE, NULL,
                               widget, horiz ? "hscale" : "vscale", _x, _y, layout);
         }
         

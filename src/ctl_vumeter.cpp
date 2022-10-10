@@ -34,19 +34,22 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     
     float r, g, b;
+
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     
-    int x = widget->allocation.x;
-    int y = widget->allocation.y;
-    int width = widget->allocation.width;
-    int height = widget->allocation.height;
-    int border_x = widget->style->xthickness;
-    int border_y = widget->style->ythickness;
+    int x = allocation.x;
+    int y = allocation.y;
+    int width = allocation.width;
+    int height = allocation.height;
+    int border_x = gtk_widget_get_style(widget)->xthickness;
+    int border_y = gtk_widget_get_style(widget)->ythickness;
     int space_x = 1; int space_y = 1; // inner border around led bar
     int led = 2; // single LED size
     int led_m = 1; // margin between LED
     int led_s = led + led_m; // size of LED with margin
-    int led_x = widget->style->xthickness;
-    int led_y = widget->style->ythickness; // position of first LED
+    int led_x = gtk_widget_get_style(widget)->xthickness;
+    int led_y = gtk_widget_get_style(widget)->ythickness; // position of first LED
     int led_w = width - 2 * led_x + led_m; // width of LED bar w/o text calc (additional led margin, is removed later; used for filling the led bar completely w/o margin gap)
     int led_h = height - 2 * led_y; // height of LED bar w/o text calc
     int text_x = 0; int text_y = 0;
@@ -366,8 +369,8 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_fill(c);
     }
     cairo_destroy(c);
-    //gtk_paint_shadow(widget->style, gtk_widget_get_window(widget), GTK_STATE_NORMAL, GTK_SHADOW_IN, NULL, widget, NULL, ox - 2, oy - 2, sx + 4, sy + 4);
-    //printf("exposed %p %d+%d\n", gtk_widget_get_window(widget), widget->allocation.x, widget->allocation.y);
+    //gtk_paint_shadow(gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL, GTK_SHADOW_IN, NULL, widget, NULL, ox - 2, oy - 2, sx + 4, sy + 4);
+    //printf("exposed %p %d+%d\n", gtk_widget_get_window(widget), allocation.x, allocation.y);
 
     return TRUE;
 }

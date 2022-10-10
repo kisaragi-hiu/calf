@@ -100,14 +100,16 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
         return FALSE;
     
     // dimensions
-    int width  = widget->allocation.width;
-    int height = widget->allocation.height;
-    int ox     = widget->style->xthickness;
-    int oy     = widget->style->ythickness;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    int width  = allocation.width;
+    int height = allocation.height;
+    int ox     = gtk_widget_get_style(widget)->xthickness;
+    int oy     = gtk_widget_get_style(widget)->ythickness;
     int sx     = width - ox * 2;
     int sy     = height - oy * 2;
-    int x      = widget->allocation.x;
-    int y      = widget->allocation.y;
+    int x      = allocation.x;
+    int y      = allocation.y;
     
     sx += sx % 2 - 1;
     sy += sy % 2 - 1;
@@ -255,8 +257,9 @@ calf_phase_graph_size_allocate (GtkWidget *widget,
         cairo_surface_destroy(lg->background);
     lg->background = NULL;
     
-    widget->allocation = *allocation;
-    GtkAllocation &a = widget->allocation;
+    gtk_widget_set_allocation(widget, allocation);
+    GtkAllocation a;
+    gtk_widget_get_allocation(widget, &a);
     if (a.width > a.height) {
         a.x += (a.width - a.height) / 2;
         a.width = a.height;

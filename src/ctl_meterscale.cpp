@@ -46,11 +46,13 @@ calf_meter_scale_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_t *cr = gdk_cairo_create(GDK_DRAWABLE(window));
         cairo_text_extents_t extents;
         
-        double ox = widget->allocation.x;
-        double oy = widget->allocation.y;
-        double width  = widget->allocation.width;
-        double height = widget->allocation.height;
-        double xthick = widget->style->xthickness;
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        double ox = allocation.x;
+        double oy = allocation.y;
+        double width  = allocation.width;
+        double height = allocation.height;
+        double xthick = gtk_widget_get_style(widget)->xthickness;
         double text_w = 0, bar_x = 0, bar_width = 0, bar_y = 0;
         float r, g, b;
         double text_m = 3;
@@ -149,7 +151,7 @@ calf_meter_scale_size_request (GtkWidget *widget,
     g_assert(CALF_IS_METER_SCALE(widget));
     CalfMeterScale *self = CALF_METER_SCALE(widget);
     
-    double ythick = widget->style->ythickness;
+    double ythick = gtk_widget_get_style(widget)->ythickness;
     double text_h = 8; // FIXME: Pango layout should be used here
     double dot_s  = 2;
     double dot_m  = 2;

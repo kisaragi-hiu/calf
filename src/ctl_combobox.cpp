@@ -48,8 +48,8 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
     
     if (gtk_widget_is_drawable (widget)) {
         
-        int padx = widget->style->xthickness;
-        int pady = widget->style->ythickness;
+        int padx = gtk_widget_get_style(widget)->xthickness;
+        int pady = gtk_widget_get_style(widget)->ythickness;
         
         GtkComboBox *cb = GTK_COMBO_BOX(widget);
         CalfCombobox *ccb = CALF_COMBOBOX(widget);
@@ -63,11 +63,13 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
             gtk_tree_model_get (model, &iter, 0, &lab, -1);
         else
             lab = g_strdup("");
-            
-        int x  = widget->allocation.x;
-        int y  = widget->allocation.y;
-        int sx = widget->allocation.width;
-        int sy = widget->allocation.height;
+        
+        GtkAllocation allocation;
+        gtk_widget_get_allocation(widget, &allocation);
+        int x  = allocation.x;
+        int y  = allocation.y;
+        int sx = allocation.width;
+        int sy = allocation.height;
         gint mx, my;
         bool hover = false;
         
@@ -84,8 +86,10 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
         display_background(widget, c, x, y, sx - padx * 2, sy - pady * 2, padx, pady, radius, bevel, g_ascii_isspace(lab[0]) ? 0 : 1, shadow, hover ? lightshover : lights, hover ? dullhover : dull);
         
         // text
-        gtk_container_propagate_expose (GTK_CONTAINER (widget),
-            GTK_BIN (widget)->child, event);
+        gtk_container_propagate_expose
+            (GTK_CONTAINER (widget),
+             gtk_bin_get_child(GTK_BIN(widget)),
+             event);
 
         // arrow
         if (ccb->arrow) {

@@ -864,7 +864,8 @@ GtkWidget *knob_param_control::create(plugin_gui *_gui, int _param_no)
     CalfKnob * knob = CALF_KNOB(widget);
     
     float increment = props.get_increment();
-    gtk_range_get_adjustment(GTK_RANGE(widget))->step_increment = increment;
+    gtk_adjustment_set_step_increment(gtk_range_get_adjustment(GTK_RANGE(widget)),
+                                      increment);
     
     knob->default_value = props.to_01(props.def_value);
     knob->type = get_int("type");
