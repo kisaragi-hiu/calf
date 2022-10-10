@@ -610,7 +610,7 @@ calf_line_graph_clear_surface(cairo_t *ctx)
     cairo_restore (ctx);
 }
 
-void calf_line_graph_expose_request (GtkWidget *widget, bool force)
+void calf_line_graph_draw_request (GtkWidget *widget, bool force)
 {
     // someone thinks we should redraw the line graph. let's see what
     // the plugin thinks about. To do that a bitmask is sent to the
@@ -648,7 +648,7 @@ void calf_line_graph_expose_request (GtkWidget *widget, bool force)
 }
 
 static gboolean
-calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_line_graph_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_LINE_GRAPH(widget));
     CalfLineGraph *lg = CALF_LINE_GRAPH(widget);
@@ -659,7 +659,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     if (lg->debug) printf("\n\n####### exposing %d #######\n", lg->generation);
     
     // cairo context of the window
-    cairo_t *c            = gdk_cairo_create(gtk_widget_get_window(widget));
+    // cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     
     
     // recreate surfaces if someone needs it (init of the widget,
@@ -1056,7 +1056,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     //if (lg->debug) printf("switch to window\n");
     //ctx = calf_line_graph_switch_context(lg, c, &cimpl);
     if (lg->debug) printf("copy realtime->window\n");
-    calf_line_graph_copy_surface(c, lg->realtime_surface, lg->x, lg->y);
+    calf_line_graph_copy_surface(cr, lg->realtime_surface, lg->x, lg->y);
     
     // if someone changed the handles via drag'n'drop or externally we
     // need a redraw of the handles surface
@@ -1071,7 +1071,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     // window
     if (lg->freqhandles) {
         if (lg->debug) printf("copy handles->window\n");
-        calf_line_graph_copy_surface(c, lg->handles_surface, lg->x, lg->y);
+        calf_line_graph_copy_surface(cr, lg->handles_surface, lg->x, lg->y);
     }
     
     // and draw the crosshairs on top if neccessary
@@ -1079,8 +1079,8 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
         && lg->mouse_y > 0 && lg->handle_grabbed < 0) {
         string s;
         s = lg->source->get_crosshair_label((int)(lg->mouse_x - ox), (int)(lg->mouse_y - oy), sx, sy, 0, 1, 1, 1, 1);
-        cairo_set_line_width(c, 1),
-        calf_line_graph_draw_crosshairs(lg, c, false, 0, 0.5, 5, false, lg->mouse_x - ox, lg->mouse_y - oy, s, 1.5, lg->x, lg->y);
+        cairo_set_line_width(cr, 1),
+        calf_line_graph_draw_crosshairs(lg, cr, false, 0, 0.5, 5, false, lg->mouse_x - ox, lg->mouse_y - oy, s, 1.5, lg->x, lg->y);
     }
     
     lg->force_cache       = false;
@@ -1090,7 +1090,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     lg->layers            = 0;
     
     // destroy all temporarily created cairo contexts
-    cairo_destroy(c);
+    // cairo_destroy(cr);
     cairo_destroy(realtime_c);
     cairo_destroy(grid_c);
     cairo_destroy(cache_c);
@@ -1180,7 +1180,7 @@ calf_line_graph_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
             g_signal_emit_by_name(widget, "freqhandle-changed", handle);
         }
         lg->handle_redraw = 1;
-        calf_line_graph_expose_request(widget, true);
+        calf_line_graph_draw_request(widget, true);
     }
     if (event->is_hint)
     {
@@ -1198,10 +1198,10 @@ calf_line_graph_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
             lg->handle_hovered = -1;
         }
         lg->handle_redraw = 1;
-        calf_line_graph_expose_request(widget, true);
+        calf_line_graph_draw_request(widget, true);
     }
     if(lg->crosshairs_active and lg->use_crosshairs) {
-        calf_line_graph_expose_request(widget, true);
+        calf_line_graph_draw_request(widget, true);
     }
     return TRUE;
 }
@@ -1261,7 +1261,7 @@ calf_line_graph_button_press (GtkWidget *widget, GdkEventButton *event)
         lg->crosshairs_active = !lg->crosshairs_active;
     }
     
-    calf_line_graph_expose_request(widget, true);
+    calf_line_graph_draw_request(widget, true);
     gtk_widget_grab_focus(widget);
     gtk_grab_add(widget);
     
@@ -1279,7 +1279,7 @@ calf_line_graph_button_release (GtkWidget *widget, GdkEventButton *event)
     if (gtk_widget_has_grab(widget))
         gtk_grab_remove(widget);
         
-    calf_line_graph_expose_request(widget, true);
+    calf_line_graph_draw_request(widget, true);
     return TRUE;
 }
 
@@ -1332,13 +1332,13 @@ calf_line_graph_leave (GtkWidget *widget, GdkEventCrossing *event)
     
     if (lg->debug) printf("[leave]\n");
     if (lg->mouse_x >= 0 or lg->mouse_y >= 0)
-        calf_line_graph_expose_request(widget, true);
+        calf_line_graph_draw_request(widget, true);
     lg->mouse_x = -1;
     lg->mouse_y = -1;
     gdk_window_set_cursor(gtk_widget_get_window(widget), lg->arrow_cursor);
     lg->handle_hovered = -1;
     lg->handle_redraw = 1;
-    calf_line_graph_expose_request(widget, true);
+    calf_line_graph_draw_request(widget, true);
     return TRUE;
 }
 
@@ -1404,7 +1404,7 @@ calf_line_graph_class_init (CalfLineGraphClass *klass)
 {
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_line_graph_expose;
+    widget_class->draw = calf_line_graph_draw;
     widget_class->size_request = calf_line_graph_size_request;
     widget_class->size_allocate = calf_line_graph_size_allocate;
     widget_class->button_press_event = calf_line_graph_button_press;

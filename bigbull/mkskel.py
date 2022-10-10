@@ -109,7 +109,7 @@ static void
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->realize = [preftype]_realize;
-    widget_class->expose_event = [preftype]_expose;
+    widget_class->draw = [preftype]_draw;
     widget_class->size_request = [preftype]_size_request;
     widget_class->size_allocate = [preftype]_size_allocate;
     // widget_class->button_press_event = [preftype]_button_press;

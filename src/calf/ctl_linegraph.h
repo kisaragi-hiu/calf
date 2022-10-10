@@ -131,7 +131,7 @@ extern GType calf_line_graph_get_type();
 
 extern void calf_line_graph_set_square(CalfLineGraph *graph, bool is_square);
 
-extern void calf_line_graph_expose_request (GtkWidget *widget, bool force = false);
+extern void calf_line_graph_draw_request (GtkWidget *widget, bool force = false);
 
 G_END_DECLS
 

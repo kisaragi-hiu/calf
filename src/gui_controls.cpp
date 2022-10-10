@@ -1459,7 +1459,7 @@ void line_graph_param_control::set()
                 clg->handle_redraw = true;
             }
         }
-        calf_line_graph_expose_request(widget, force);
+        calf_line_graph_draw_request(widget, force);
     }
 }
 

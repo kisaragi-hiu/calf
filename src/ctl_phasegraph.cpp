@@ -92,11 +92,11 @@ calf_phase_graph_copy_surface(cairo_t *ctx, cairo_surface_t *source, int x = 0, 
     cairo_restore(ctx);
 }
 static gboolean
-calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_phase_graph_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_PHASE_GRAPH(widget));
     CalfPhaseGraph *pg = CALF_PHASE_GRAPH(widget);
-    if (!pg->source) 
+    if (!pg->source)
         return FALSE;
     
     // dimensions
@@ -130,7 +130,6 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     bool display = true;
     
     // cairo initialization stuff
-    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *ctx_back;
     cairo_t *ctx_cache;
     
@@ -227,9 +226,9 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
         }
     }
     
-    calf_phase_graph_copy_surface(c, pg->cache, x, y);
+    calf_phase_graph_copy_surface(cr, pg->cache, x, y);
     
-    cairo_destroy(c);
+    // cairo_destroy(cr);
     cairo_destroy(ctx_back);
     cairo_destroy(ctx_cache);
     // printf("exposed %p %dx%d %d+%d\n", gtk_widget_get_window(widget), event->area.x, event->area.y, event->area.width, event->area.height);
@@ -275,7 +274,7 @@ static void
 calf_phase_graph_class_init (CalfPhaseGraphClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_phase_graph_expose;
+    widget_class->draw = calf_phase_graph_draw;
     widget_class->size_request = calf_phase_graph_size_request;
     widget_class->size_allocate = calf_phase_graph_size_allocate;
     gtk_widget_class_install_style_property(

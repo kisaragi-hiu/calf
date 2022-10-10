@@ -81,7 +81,7 @@ calf_knob_get_color (CalfKnob *self, float deg, float phase, float start, float 
 }
 
 static gboolean
-calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_knob_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_KNOB(widget));
     CalfKnob *self = CALF_KNOB(widget);
@@ -97,7 +97,6 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
         printf("pixbuf: %d x %d\n", iw, ih);
         
     GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-    cairo_t *ctx = gdk_cairo_create(gtk_widget_get_window(widget));
     
     float r, g, b;
     GtkStateType state;
@@ -140,14 +139,15 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     double tickw  = 2. / perim * 360.;
     double tickw2 = tickw / 2.;
     
-    cairo_rectangle(ctx, ox, oy, size + size / 2, size + size / 2);
-    cairo_clip(ctx);
+    cairo_rectangle(cr, ox, oy, size + size / 2, size + size / 2);
+    cairo_clip(cr);
     
     // draw background
-    cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
-    gdk_cairo_set_source_pixbuf(cr, pixbuf, ox, oy);
-    cairo_paint (cr);
-    cairo_destroy (cr);
+    // FIXME: how does this work?
+    // cairo_t *cr2 = gdk_cairo_create(gtk_widget_get_window(widget));
+    // gdk_cairo_set_source_pixbuf(cr2, pixbuf, ox, oy);
+    // cairo_paint (cr2);
+    // cairo_destroy (cr2);
     
     switch (self->type) {
         default:
@@ -193,16 +193,16 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     float y1 = oy + rad + (rad - tmargin) * sin(phase * (M_PI / 180.));
     float x2 = ox + rad + (rad - tlength - tmargin) * cos(phase * (M_PI / 180.));
     float y2 = oy + rad + (rad - tlength - tmargin) * sin(phase * (M_PI / 180.));
-    cairo_move_to(ctx, x1, y1);
-    cairo_line_to(ctx, x2, y2);
-    cairo_set_source_rgba(ctx, r, g, b, 1);
-    cairo_set_line_width(ctx, twidth);
-    cairo_stroke(ctx);
+    cairo_move_to(cr, x1, y1);
+    cairo_line_to(cr, x2, y2);
+    cairo_set_source_rgba(cr, r, g, b, 1);
+    cairo_set_line_width(cr, twidth);
+    cairo_stroke(cr);
     
     if (self->debug > 1)
         printf("pin color: %.2f | %.2f | %.2f\n", r, g, b);
     
-    cairo_set_line_width(ctx, rwidth);
+    cairo_set_line_width(cr, rwidth);
     
     // draw ticks and rings
     state = GTK_STATE_NORMAL;
@@ -227,18 +227,18 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
             // (draw from last known angle to tickw2 + tickw before actual deg)
             if (last < deg - tickw - tickw2) {
                 calf_knob_get_color(self, (deg - tickw - tickw2), phase, start, last, tickw + tickw2, &r, &g, &b, &opac);
-                cairo_set_source_rgba(ctx, r, g, b, opac);
-                cairo_arc(ctx, xc, yc, rad - rmargin, last * (M_PI / 180.), std::max(last, std::min(nend, (deg - tickw - tickw2))) * (M_PI / 180.));
-                cairo_stroke(ctx);
+                cairo_set_source_rgba(cr, r, g, b, opac);
+                cairo_arc(cr, xc, yc, rad - rmargin, last * (M_PI / 180.), std::max(last, std::min(nend, (deg - tickw - tickw2))) * (M_PI / 180.));
+                cairo_stroke(cr);
                 if (self->debug) printf("fill from %.2f to %.2f @ %.2f\n", last, (deg - tickw - tickw2), opac);
                 if (self->debug > 1)
                     printf("color: %.2f | %.2f | %.2f\n", r, g, b);
             }
             // draw the tick itself
             calf_knob_get_color(self, deg, phase, start, end, tickw + tickw2, &r, &g, &b, &opac);
-            cairo_set_source_rgba(ctx, r, g, b, opac);
-            cairo_arc(ctx, xc, yc, rad - rmargin, (deg - tickw2) * (M_PI / 180.), (deg + tickw2) * (M_PI / 180.));
-            cairo_stroke(ctx);
+            cairo_set_source_rgba(cr, r, g, b, opac);
+            cairo_arc(cr, xc, yc, rad - rmargin, (deg - tickw2) * (M_PI / 180.), (deg + tickw2) * (M_PI / 180.));
+            cairo_stroke(cr);
             if (self->debug) printf("tick from %.2f to %.2f @ %.2f\n", (deg - tickw2), (deg + tickw2), opac);
             if (self->debug > 1)
                 printf("color: %.2f | %.2f | %.2f\n", r, g, b);
@@ -257,9 +257,9 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
             // knobs position or a center)
             if ((last < deg)) {
                 calf_knob_get_color(self, deg, phase, start, last, tickw + tickw2, &r, &g, &b, &opac);
-                cairo_set_source_rgba(ctx, r, g, b, opac);
-                cairo_arc(ctx, xc, yc, rad - rmargin, last * (M_PI / 180.), std::min(nend, std::max(last, deg)) * (M_PI / 180.));
-                cairo_stroke(ctx);
+                cairo_set_source_rgba(cr, r, g, b, opac);
+                cairo_arc(cr, xc, yc, rad - rmargin, last * (M_PI / 180.), std::min(nend, std::max(last, deg)) * (M_PI / 180.));
+                cairo_stroke(cr);
                 if (self->debug) printf("void from %.2f to %.2f @ %.2f\n", last, std::min(nend, std::max(last, deg)), opac);
                 if (self->debug > 1)
                     printf("color: %.2f | %.2f | %.2f\n", r, g, b);
@@ -285,7 +285,7 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
         if (self->debug > 1) printf("finally! deg %.2f\n", deg);
     }
     if (self->debug) printf("\n");
-    cairo_destroy(ctx);
+    // cairo_destroy(cr);
     return TRUE;
 }
 
@@ -520,7 +520,7 @@ calf_knob_class_init (CalfKnobClass *klass)
 {
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_knob_expose;
+    widget_class->draw = calf_knob_draw;
     widget_class->size_request = calf_knob_size_request;
     widget_class->enter_notify_event = calf_knob_enter;
     widget_class->leave_notify_event = calf_knob_leave;

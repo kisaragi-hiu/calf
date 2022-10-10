@@ -29,7 +29,7 @@ using namespace dsp;
 
 
 static gboolean
-calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_toggle_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_TOGGLE(widget));
     GtkAllocation allocation;
@@ -47,7 +47,6 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
     float sy = off * ph / 2;
     float x = wcx - pcx;
     float y = wcy - pcy;
-    cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     // sy is used to select the right part of the image.
     // Top half is off, bottom half is on.
     gdk_cairo_set_source_pixbuf (cr, self->toggle_image, x, y - sy);
@@ -56,7 +55,7 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
     gdk_cairo_rectangle(cr, &rect);
     cairo_clip(cr);
     cairo_paint (cr);
-    cairo_destroy (cr);
+    // cairo_destroy (cr);
     return TRUE;
 }
 
@@ -88,9 +87,9 @@ calf_toggle_key_press (GtkWidget *widget, GdkEventKey *event)
 {
     switch(event->keyval)
     {
-        case GDK_Return:
-        case GDK_KP_Enter:
-        case GDK_space:
+        case GDK_KEY_Return:
+        case GDK_KEY_KP_Enter:
+        case GDK_KEY_space:
             return calf_toggle_button_press(widget, NULL);
     }
     return FALSE;
@@ -101,7 +100,7 @@ calf_toggle_class_init (CalfToggleClass *klass)
 {
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_toggle_expose;
+    widget_class->draw = calf_toggle_draw;
     widget_class->size_request = calf_toggle_size_request;
     widget_class->button_press_event = calf_toggle_button_press;
     widget_class->key_press_event = calf_toggle_key_press;
@@ -163,7 +162,7 @@ GtkWidget *calf_toggle_new_with_adjustment(GtkAdjustment *_adjustment)
     GtkWidget *widget = GTK_WIDGET( g_object_new (CALF_TYPE_TOGGLE, NULL ));
     if (widget) {
         gtk_range_set_adjustment(GTK_RANGE(widget), _adjustment);
-        g_signal_connect(GTK_OBJECT(widget), "value-changed", G_CALLBACK(calf_toggle_value_changed), widget);
+        g_signal_connect(widget, "value-changed", G_CALLBACK(calf_toggle_value_changed), widget);
     }
     return widget;
 }
@@ -216,76 +215,70 @@ calf_button_new(const gchar *label)
     return widget;
 }
 static gboolean
-calf_button_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_button_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_BUTTON(widget) || CALF_IS_TOGGLE_BUTTON(widget) || CALF_IS_RADIO_BUTTON(widget));
     
-    if (gtk_widget_is_drawable (widget)) {
-        
-        GdkWindow *window    = gtk_widget_get_window(widget);
-        GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
-        cairo_t *c           = gdk_cairo_create(window);
-        
-        GtkAllocation allocation;
-        gtk_widget_get_allocation(widget, &allocation);
-        int x  = allocation.x;
-        int y  = allocation.y;
-        int sx = allocation.width;
-        int sy = allocation.height;
-        int ox = gtk_widget_get_style(widget)->xthickness;
-        int oy = gtk_widget_get_style(widget)->ythickness;
-        int bx = x + ox + 1;
-        int by = y + oy + 1;
-        int bw = sx - 2 * ox - 2;
-        int bh = sy - 2 * oy - 2;
-        
-        float r, g, b;
-        float radius, bevel, inset;
-        GtkBorder *border;
-        
-        cairo_rectangle(c, x, y, sx, sy);
-        cairo_clip(c);
-        
-        get_bg_color(widget, NULL, &r, &g, &b);
-        gtk_widget_style_get(widget, "border-radius", &radius, "bevel",  &bevel, "inset", &inset, NULL);
-        gtk_widget_style_get(widget, "inner-border", &border, NULL);
-        
-        // inset
-        draw_bevel(c, x, y, sx, sy, radius, inset*-1);
-        
-        // space
-        create_rectangle(c, x + ox, y + oy, sx - ox * 2, sy - oy * 2, std::max(0.f, radius - ox));
-        cairo_set_source_rgba(c, 0, 0, 0, 0.6);
-        cairo_fill(c);
-        
-        // button
-        create_rectangle(c, bx, by, bw, bh, std::max(0.f, radius - ox - 1));
-        cairo_set_source_rgb(c, r, g, b);
-        cairo_fill(c);
-        draw_bevel(c, bx, by, bw, bh, std::max(0.f, radius - ox - 1), bevel);
-        
-        // pin
-        if (CALF_IS_TOGGLE_BUTTON(widget) or CALF_IS_RADIO_BUTTON(widget)) {
-            int pinh;
-            int pinm = 6;
-            gtk_widget_style_get(widget, "indicator", &pinh, NULL);
-            get_text_color(widget, NULL, &r, &g, &b);
-            float a;
-            if (gtk_widget_get_state(widget) == GTK_STATE_PRELIGHT)
-                gtk_widget_style_get(widget, "alpha-prelight", &a, NULL);
-            else if (gtk_widget_get_state(widget) == GTK_STATE_ACTIVE)
-                gtk_widget_style_get(widget, "alpha-active", &a, NULL);
-            else
-                gtk_widget_style_get(widget, "alpha-normal", &a, NULL);
-            cairo_rectangle(c, x + sx - border->right - ox + pinm, y + sy / 2 - pinh / 2,
-                border->right - pinm * 2 - ox, pinh);
-            cairo_set_source_rgba(c, r, g, b, a);
-            cairo_fill(c);
-        }
-        
-        cairo_destroy(c);
-        gtk_container_propagate_expose (GTK_CONTAINER (widget), child, event);
+    // GdkWindow *window    = gtk_widget_get_window(widget);
+    // GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
+    
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
+    int x  = allocation.x;
+    int y  = allocation.y;
+    int sx = allocation.width;
+    int sy = allocation.height;
+    int ox = gtk_widget_get_style(widget)->xthickness;
+    int oy = gtk_widget_get_style(widget)->ythickness;
+    int bx = x + ox + 1;
+    int by = y + oy + 1;
+    int bw = sx - 2 * ox - 2;
+    int bh = sy - 2 * oy - 2;
+    
+    float r, g, b;
+    float radius, bevel, inset;
+    GtkBorder *border;
+    
+    get_bg_color(widget, NULL, &r, &g, &b);
+    gtk_widget_style_get(widget, "border-radius", &radius, "bevel",  &bevel, "inset", &inset, NULL);
+    gtk_widget_style_get(widget, "inner-border", &border, NULL);
+    
+    // inset
+    draw_bevel(cr, x, y, sx, sy, radius, inset*-1);
+    
+    // space
+    create_rectangle(cr, x + ox, y + oy, sx - ox * 2, sy - oy * 2, std::max(0.f, radius - ox));
+    cairo_set_source_rgba(cr, 0, 0, 0, 0.6);
+    cairo_fill(cr);
+    
+    // button
+    create_rectangle(cr, bx, by, bw, bh, std::max(0.f, radius - ox - 1));
+    cairo_set_source_rgb(cr, r, g, b);
+    cairo_fill(cr);
+    draw_bevel(cr, bx, by, bw, bh, std::max(0.f, radius - ox - 1), bevel);
+    
+    // pin
+    if (CALF_IS_TOGGLE_BUTTON(widget) or CALF_IS_RADIO_BUTTON(widget)) {
+        int pinh;
+        int pinm = 6;
+        gtk_widget_style_get(widget, "indicator", &pinh, NULL);
+        get_text_color(widget, NULL, &r, &g, &b);
+        float a;
+        if (gtk_widget_get_state(widget) == GTK_STATE_PRELIGHT)
+            gtk_widget_style_get(widget, "alpha-prelight", &a, NULL);
+        else if (gtk_widget_get_state(widget) == GTK_STATE_ACTIVE)
+            gtk_widget_style_get(widget, "alpha-active", &a, NULL);
+        else
+            gtk_widget_style_get(widget, "alpha-normal", &a, NULL);
+        cairo_rectangle(cr, x + sx - border->right - ox + pinm, y + sy / 2 - pinh / 2,
+            border->right - pinm * 2 - ox, pinh);
+        cairo_set_source_rgba(cr, r, g, b, a);
+        cairo_fill(cr);
     }
+    
+    // cairo_destroy(cr);
+    // gtk_container_propagate_expose (GTK_CONTAINER (widget), child, event);
+
     return FALSE;
 }
 
@@ -293,7 +286,7 @@ static void
 calf_button_class_init (CalfButtonClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_button_expose;
+    widget_class->draw = calf_button_draw;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",
         0, 24, 4, GParamFlags(G_PARAM_READWRITE)));
@@ -373,7 +366,7 @@ static void
 calf_toggle_button_class_init (CalfToggleButtonClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_button_expose;
+    widget_class->draw = calf_button_draw;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",
         0, 24, 4, GParamFlags(G_PARAM_READWRITE)));
@@ -455,7 +448,7 @@ static void
 calf_radio_button_class_init (CalfRadioButtonClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_button_expose;
+    widget_class->draw = calf_button_draw;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",
         0, 24, 4, GParamFlags(G_PARAM_READWRITE)));
@@ -533,7 +526,7 @@ calf_tap_button_new()
 }
 
 static gboolean
-calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_tap_button_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_TAP_BUTTON(widget));
     CalfTapButton *self = CALF_TAP_BUTTON(widget);
@@ -548,10 +541,9 @@ calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
     int x = allocation.x + allocation.width / 2 - width / 2;
     int y = allocation.y + allocation.height / 2 - height / 2;
     
-    cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     gdk_cairo_set_source_pixbuf (cr, self->image[self->state], x, y);
     cairo_paint (cr);
-    cairo_destroy (cr);
+    // cairo_destroy (cr);
     return TRUE;
 }
 
@@ -579,7 +571,7 @@ static void
 calf_tap_button_class_init (CalfTapButtonClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_tap_button_expose;
+    widget_class->draw = calf_tap_button_draw;
     widget_class->size_request = calf_tap_button_size_request;
 }
 static void

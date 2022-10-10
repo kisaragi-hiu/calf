@@ -36,14 +36,12 @@ calf_meter_scale_new()
     return widget;
 }
 static gboolean
-calf_meter_scale_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_meter_scale_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_METER_SCALE(widget));
     CalfMeterScale *ms = CALF_METER_SCALE(widget);
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = gtk_widget_get_window(widget);
-        cairo_t *cr = gdk_cairo_create(window);
         cairo_text_extents_t extents;
         
         GtkAllocation allocation;
@@ -139,7 +137,7 @@ calf_meter_scale_expose (GtkWidget *widget, GdkEventExpose *event)
                 std::min(ox + width, std::max(ox, bar_x + bar_width * val - extents.width / 2)), bar_y);
             cairo_show_text(cr, str);
         }
-        cairo_destroy(cr);
+        // cairo_destroy(cr);
     }
     return FALSE;
 }
@@ -163,7 +161,7 @@ static void
 calf_meter_scale_class_init (CalfMeterScaleClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_meter_scale_expose;
+    widget_class->draw = calf_meter_scale_draw;
     widget_class->size_request = calf_meter_scale_size_request;
 }
 

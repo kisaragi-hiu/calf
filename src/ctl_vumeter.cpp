@@ -26,12 +26,11 @@
 
 
 static gboolean
-calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_vumeter_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_VUMETER(widget));
 
     CalfVUMeter *vu = CALF_VUMETER(widget);
-    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     
     float r, g, b;
 
@@ -59,10 +58,10 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_text_extents_t extents;
     
     if(vu->vumeter_position) {
-        cairo_select_font_face(c, "cairo:sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(c, 8);
+        cairo_select_font_face(cr, "cairo:sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(cr, 8);
 
-        cairo_text_extents(c, "-88.88", &extents);
+        cairo_text_extents(cr, "-88.88", &extents);
         text_w = extents.width;
         text_h = extents.height;
         switch(vu->vumeter_position) {
@@ -232,9 +231,9 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
     text_x += x;
     text_y += y;
     // draw LED blinder
-    cairo_set_source_surface( c, vu->cache_surface, x, y );
-    cairo_paint( c );
-    cairo_set_source_surface( c, vu->cache_overlay, x, y );
+    cairo_set_source_surface( cr, vu->cache_surface, x, y );
+    cairo_paint( cr );
+    cairo_set_source_surface( cr, vu->cache_overlay, x, y );
     
     // get microseconds
     timeval tv;
@@ -292,14 +291,14 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
             int hold_x = round((draw_last) * (led_w + led_m)); // add last led_m removed earlier
             hold_x -= hold_x % led_s + led_m;
             hold_x = std::max(0, hold_x);
-            cairo_rectangle( c, led_x, led_y, hold_x, led_h);
+            cairo_rectangle( cr, led_x, led_y, hold_x, led_h);
             
             // blinder hold LED -> value
             int val_x = round((1 - draw) * (led_w + led_m)); // add last led_m removed earlier
             val_x -= val_x % led_s;
             int blind_x = std::min(hold_x + led_s, led_w);
             int blind_w = std::min(std::max(led_w - val_x - hold_x - led_s, 0), led_w);
-            cairo_rectangle(c, led_x + blind_x, led_y, blind_w, led_h);
+            cairo_rectangle(cr, led_x + blind_x, led_y, blind_w, led_h);
         } else  if( vu->mode == VU_STANDARD_CENTER ) {
             if(value > vu->last_value) {
                 // value is above peak hold
@@ -309,8 +308,8 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
             }
             draw = log10(1 + value * 9);
             int val_x = round((1 - draw) / 2.f * (led_w + led_m)); // add last led_m removed earlier
-            cairo_rectangle(c, led_x, led_y, val_x, led_h);
-            cairo_rectangle(c, led_x + led_w - val_x, led_y, val_x, led_h);
+            cairo_rectangle(cr, led_x, led_y, val_x, led_h);
+            cairo_rectangle(cr, led_x + led_w - val_x, led_y, val_x, led_h);
             
         } else {
             if(value > vu->last_value) {
@@ -328,22 +327,22 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
             val_x -= val_x % led_s;
             int blind_w = led_w - hold_x - led_s - val_x;
             blind_w = std::min(std::max(blind_w, 0), led_w);
-            cairo_rectangle(c, led_x + val_x, led_y, blind_w, led_h);
-            cairo_rectangle( c, led_x + led_w - hold_x, led_y, hold_x, led_h);
+            cairo_rectangle(cr, led_x + val_x, led_y, blind_w, led_h);
+            cairo_rectangle( cr, led_x + led_w - hold_x, led_y, hold_x, led_h);
         }
     } else {
         // darken normally
         float draw = log10(1 + value * 9);
         if( vu->mode == VU_MONOCHROME_REVERSE )
-            cairo_rectangle( c, led_x, led_y, draw * led_w, led_h);
+            cairo_rectangle( cr, led_x, led_y, draw * led_w, led_h);
         else if( vu->mode == VU_STANDARD_CENTER ) {
             int val_x = round((1 - draw) / 2.f * (led_w + led_m)); // add last led_m removed earlier
-            cairo_rectangle(c, led_x, led_y, val_x, led_h);
-            cairo_rectangle(c, led_x + led_w - val_x, led_y, val_x, led_h);
+            cairo_rectangle(cr, led_x, led_y, val_x, led_h);
+            cairo_rectangle(cr, led_x + led_w - val_x, led_y, val_x, led_h);
         } else
-            cairo_rectangle( c, led_x + draw * led_w, led_y, led_w * (1 - draw), led_h);
+            cairo_rectangle( cr, led_x + draw * led_w, led_y, led_w * (1 - draw), led_h);
     }
-    cairo_fill( c );
+    cairo_fill( cr );
     
     if (vu->vumeter_position)
     {
@@ -356,19 +355,19 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
         else
             snprintf(str, sizeof(str), "%0.2f", dsp::amp2dB(vu->disp_value));
         // draw value as number
-        cairo_text_extents(c, str, &extents);
-        cairo_move_to(c, text_x + (text_w - extents.width) / 2.0, text_y);
+        cairo_text_extents(cr, str, &extents);
+        cairo_move_to(cr, text_x + (text_w - extents.width) / 2.0, text_y);
         GtkStateType state;
         if(vu->disp_value > 1.f and vu->mode != VU_MONOCHROME_REVERSE)
             state = GTK_STATE_ACTIVE;
         else
             state = GTK_STATE_NORMAL;
         get_fg_color(widget, &state, &r, &g, &b);
-        cairo_set_source_rgba (c, r, g, b, 1);
-        cairo_show_text(c, str);
-        cairo_fill(c);
+        cairo_set_source_rgba (cr, r, g, b, 1);
+        cairo_show_text(cr, str);
+        cairo_fill(cr);
     }
-    cairo_destroy(c);
+    // cairo_destroy(cr);
     //gtk_paint_shadow(gtk_widget_get_style(widget), gtk_widget_get_window(widget), GTK_STATE_NORMAL, GTK_SHADOW_IN, NULL, widget, NULL, ox - 2, oy - 2, sx + 4, sy + 4);
     //printf("exposed %p %d+%d\n", gtk_widget_get_window(widget), allocation.x, allocation.y);
 
@@ -414,7 +413,7 @@ static void
 calf_vumeter_class_init (CalfVUMeterClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_vumeter_expose;
+    widget_class->draw = calf_vumeter_draw;
     widget_class->size_request = calf_vumeter_size_request;
     widget_class->size_allocate = calf_vumeter_size_allocate;
     gtk_widget_class_install_style_property(

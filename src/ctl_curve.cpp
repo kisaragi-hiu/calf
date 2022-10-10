@@ -38,19 +38,17 @@ calf_curve_new(unsigned int point_limit)
 }
 
 static gboolean
-calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_curve_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_CURVE(widget));
     
     CalfCurve *self = CALF_CURVE(widget);
-    GdkWindow *window = gtk_widget_get_window(widget);
-    cairo_t *c = gdk_cairo_create(window);
     GdkColor scHot = { 0, 65535, 0, 0 };
     GdkColor scPoint = { 0, 65535, 65535, 65535 };
     GdkColor scLine = { 0, 32767, 32767, 32767 };
     if (self->points->size())
     {
-        gdk_cairo_set_source_color(c, &scLine);
+        gdk_cairo_set_source_color(cr, &scLine);
         for (size_t i = 0; i < self->points->size(); i++)
         {
             const CalfCurve::point &pt = (*self->points)[i];
@@ -59,11 +57,11 @@ calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
             float x = pt.first, y = pt.second;
             self->log2phys(x, y);
             if (!i)
-                cairo_move_to(c, x, y);
+                cairo_move_to(cr, x, y);
             else
-                cairo_line_to(c, x, y);
+                cairo_line_to(cr, x, y);
         }
-        cairo_stroke(c);
+        cairo_stroke(cr);
     }
     for (size_t i = 0; i < self->points->size(); i++)
     {
@@ -72,11 +70,11 @@ calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
         const CalfCurve::point &pt = (*self->points)[i];
         float x = pt.first, y = pt.second;
         self->log2phys(x, y);
-        gdk_cairo_set_source_color(c, (i == (size_t)self->cur_pt) ? &scHot : &scPoint);
-        cairo_rectangle(c, x - 2, y - 2, 5, 5);
-        cairo_fill(c);
+        gdk_cairo_set_source_color(cr, (i == (size_t)self->cur_pt) ? &scHot : &scPoint);
+        cairo_rectangle(cr, x - 2, y - 2, 5, 5);
+        cairo_fill(cr);
     }
-    cairo_destroy(c);
+    // cairo_destroy(cr);
 
     return TRUE;
 }
@@ -255,7 +253,7 @@ calf_curve_class_init (CalfCurveClass *klass)
     
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->realize = calf_curve_realize;
-    widget_class->expose_event = calf_curve_expose;
+    widget_class->draw = calf_curve_draw;
     widget_class->size_request = calf_curve_size_request;
     widget_class->size_allocate = calf_curve_size_allocate;
     widget_class->button_press_event = calf_curve_button_press;

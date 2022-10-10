@@ -34,7 +34,7 @@ calf_notebook_new()
     return widget;
 }
 static gboolean
-calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_notebook_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_NOTEBOOK(widget));
     
@@ -43,8 +43,7 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
     
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = gtk_widget_get_window(widget);
-        cairo_t *c = gdk_cairo_create(window);
+        // GdkWindow *window = gtk_widget_get_window(widget);
         cairo_pattern_t *pat = NULL;
         
         GtkAllocation allocation;
@@ -62,8 +61,8 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
         float alpha;
         gtk_widget_style_get(widget, "background-alpha", &alpha, NULL);
         
-        cairo_rectangle(c, x, y, sx, sy);
-        cairo_clip(c);
+        cairo_rectangle(cr, x, y, sx, sy);
+        cairo_clip(cr);
         
         int add = 0;
         
@@ -85,7 +84,7 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
                 pages = pages->next;
                 tab_label = gtk_notebook_get_tab_label(notebook, page);
                 if (gtk_widget_get_window(tab_label) ==
-                        event->window &&
+                      gtk_widget_get_window(widget) &&
                     gtk_widget_is_drawable(tab_label)) {
                     GtkAllocation allocation;
                     gtk_widget_get_allocation(tab_label, &allocation);
@@ -98,29 +97,29 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
                     gtk_widget_set_allocation(tab_label, &allocation);
                     
                     // draw tab background
-                    cairo_rectangle(c, lx - tx, y, lw + 2 * tx, bh);
+                    cairo_rectangle(cr, lx - tx, y, lw + 2 * tx, bh);
                     get_base_color(widget, NULL, &r, &g, &b);
-                    cairo_set_source_rgba(c, r,g,b, page != cur_page ? alpha / 2 : alpha);
-                    cairo_fill(c);
+                    cairo_set_source_rgba(cr, r,g,b, page != cur_page ? alpha / 2 : alpha);
+                    cairo_fill(cr);
                     
                     if (page == cur_page) {
                         // draw tab light
                         get_bg_color(widget, NULL, &r, &g, &b);
-                        cairo_rectangle(c, lx - tx + 2, y + 2, lw + 2 * tx - 4, 2);
-                        cairo_set_source_rgb(c, r, g, b);
-                        cairo_fill(c);
+                        cairo_rectangle(cr, lx - tx + 2, y + 2, lw + 2 * tx - 4, 2);
+                        cairo_set_source_rgb(cr, r, g, b);
+                        cairo_fill(cr);
                         
-                        cairo_rectangle(c, lx - tx + 2, y + 1, lw + 2 * tx - 4, 1);
-                        cairo_set_source_rgba(c, 0,0,0,0.5);
-                        cairo_fill(c);
+                        cairo_rectangle(cr, lx - tx + 2, y + 1, lw + 2 * tx - 4, 1);
+                        cairo_set_source_rgba(cr, 0,0,0,0.5);
+                        cairo_fill(cr);
                         
-                        cairo_rectangle(c, lx - tx + 2, y + 4, lw + 2 * tx - 4, 1);
-                        cairo_set_source_rgba(c, 1,1,1,0.3);
-                        cairo_fill(c);
+                        cairo_rectangle(cr, lx - tx + 2, y + 4, lw + 2 * tx - 4, 1);
+                        cairo_set_source_rgba(cr, 1,1,1,0.3);
+                        cairo_fill(cr);
                     
                     }
                     // draw labels
-                    gtk_container_propagate_expose (GTK_CONTAINER (notebook), tab_label, event);
+                    // gtk_container_propagate_expose (GTK_CONTAINER (notebook), tab_label, event);
                 }
                 cn++;
             }
@@ -129,49 +128,49 @@ calf_notebook_expose (GtkWidget *widget, GdkEventExpose *event)
         
         // draw main body
         get_base_color(widget, NULL, &r, &g, &b);
-        cairo_rectangle(c, x, y + add, sx, sy - add);
-        cairo_set_source_rgba(c, r, g, b, alpha);
-        cairo_fill(c);
+        cairo_rectangle(cr, x, y + add, sx, sy - add);
+        cairo_set_source_rgba(cr, r, g, b, alpha);
+        cairo_fill(cr);
         
         // draw frame
-        cairo_rectangle(c, x + 0.5, y + add + 0.5, sx - 1, sy - add - 1);
+        cairo_rectangle(cr, x + 0.5, y + add + 0.5, sx - 1, sy - add - 1);
         pat = cairo_pattern_create_linear(x, y + add, x, y + sy - add);
         cairo_pattern_add_color_stop_rgba(pat,   0,   0,   0,   0, 0.3);
         cairo_pattern_add_color_stop_rgba(pat, 0.5, 0.5, 0.5, 0.5,   0);
         cairo_pattern_add_color_stop_rgba(pat,   1,   1,   1,   1, 0.2);
-        cairo_set_source (c, pat);
-        cairo_set_line_width(c, 1);
-        cairo_stroke_preserve(c);
+        cairo_set_source (cr, pat);
+        cairo_set_line_width(cr, 1);
+        cairo_stroke_preserve(cr);
                     
         int sw = gdk_pixbuf_get_width(nb->screw);
         int sh = gdk_pixbuf_get_height(nb->screw);
         
         // draw screws
         if (nb->screw) {
-            gdk_cairo_set_source_pixbuf(c, nb->screw, x, y + add);
-            cairo_fill_preserve(c);
-            gdk_cairo_set_source_pixbuf(c, nb->screw, x + sx - sw, y + add);
-            cairo_fill_preserve(c);
-            gdk_cairo_set_source_pixbuf(c, nb->screw, x, y + sy - sh);
-            cairo_fill_preserve(c);
-            gdk_cairo_set_source_pixbuf(c, nb->screw, x + sx - sh, y + sy - sh);
-            cairo_fill_preserve(c);
+            gdk_cairo_set_source_pixbuf(cr, nb->screw, x, y + add);
+            cairo_fill_preserve(cr);
+            gdk_cairo_set_source_pixbuf(cr, nb->screw, x + sx - sw, y + add);
+            cairo_fill_preserve(cr);
+            gdk_cairo_set_source_pixbuf(cr, nb->screw, x, y + sy - sh);
+            cairo_fill_preserve(cr);
+            gdk_cairo_set_source_pixbuf(cr, nb->screw, x + sx - sh, y + sy - sh);
+            cairo_fill_preserve(cr);
         }
         // propagate expose to all children
         // Beware that get_current_page returns 0 as an index for the
         // first page, which is falsy if used directly.
-        if (gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook)))
-        {
-            gtk_container_propagate_expose(
-                GTK_CONTAINER(notebook),
-                gtk_notebook_get_nth_page(
-                    notebook,
-                    gtk_notebook_get_current_page(notebook)),
-                event);
-        }
+        // if (gtk_notebook_get_nth_page(notebook, gtk_notebook_get_current_page(notebook)))
+        // {
+        //     gtk_container_propagate_expose(
+        //         GTK_CONTAINER(notebook),
+        //         gtk_notebook_get_nth_page(
+        //             notebook,
+        //             gtk_notebook_get_current_page(notebook)),
+        //         event);
+        // }
         
         cairo_pattern_destroy(pat);
-        cairo_destroy(c);
+        // cairo_destroy(cr);
         
     }
     return FALSE;
@@ -188,7 +187,7 @@ static void
 calf_notebook_class_init (CalfNotebookClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_notebook_expose;
+    widget_class->draw = calf_notebook_draw;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("background-alpha", "Alpha Background", "Alpha of background",
         0.0, 1.0, 0.5, GParamFlags(G_PARAM_READWRITE)));

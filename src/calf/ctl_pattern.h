@@ -72,7 +72,7 @@ extern GtkWidget *calf_pattern_new();
 extern GType calf_pattern_get_type();
 extern void calf_pattern_draw_handle (GtkWidget *wi, cairo_t *cr, int bar, int beat, int x, int y, double value, float alpha, bool outline = false);
 
-extern void calf_pattern_expose_request (GtkWidget *widget, bool force = false);
+extern void calf_pattern_draw_request (GtkWidget *widget, bool force = false);
 
 G_END_DECLS
 

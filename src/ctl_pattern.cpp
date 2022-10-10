@@ -145,11 +145,10 @@ void calf_pattern_draw_handle (GtkWidget *wi, cairo_t *cr, int bar, int beat, in
 }
 
 static gboolean
-calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_pattern_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_PATTERN(widget));
     CalfPattern *p = CALF_PATTERN(widget);
-    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     if (p->force_redraw) {
         GtkAllocation allocation;
         gtk_widget_get_allocation(widget, &allocation);
@@ -168,19 +167,19 @@ calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
         calf_pattern_draw_background(widget, bg);
         cairo_destroy(bg);
     }
-    cairo_rectangle(c, p->x, p->y, p->width, p->height);
-    cairo_clip(c);
+    cairo_rectangle(cr, p->x, p->y, p->width, p->height);
+    cairo_clip(cr);
     
-    cairo_rectangle(c, p->x, p->y, p->width, p->height);
-    cairo_set_source_surface(c, p->background_surface, p->x, p->y);
-    cairo_fill(c);
+    cairo_rectangle(cr, p->x, p->y, p->width, p->height);
+    cairo_set_source_surface(cr, p->background_surface, p->x, p->y);
+    cairo_fill(cr);
     
     for (int i = 0; i < p->bars; i ++) {
         for (int j = 0; j < p->beats; j++) {
             if  ((p->handle_grabbed.bar == i  and p->handle_grabbed.beat == j)
             or  ((p->handle_hovered.bar == i  and p->handle_hovered.beat == j)
             and  (p->handle_grabbed.bar == -1 and p->handle_grabbed.beat == -1))) {
-                calf_pattern_draw_handle(widget, c, i, j, p->x, p->y, 1.0, 0.1);
+                calf_pattern_draw_handle(widget, cr, i, j, p->x, p->y, 1.0, 0.1);
             }
         }
     }
@@ -189,12 +188,12 @@ calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
         for (int j = 0; j < p->beats; j++) {
             double val = p->values[i][j];
             if (val > 0)
-                calf_pattern_draw_handle(widget, c, i, j, p->x, p->y, val, 0.8);
+                calf_pattern_draw_handle(widget, cr, i, j, p->x, p->y, val, 0.8);
         }
     }
     
     p->force_redraw = false;
-    cairo_destroy(c);
+    // cairo_destroy(cr);
     return TRUE;
 }
 
@@ -412,7 +411,7 @@ calf_pattern_class_init (CalfPatternClass *klass)
 {
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_pattern_expose;
+    widget_class->draw = calf_pattern_draw;
     widget_class->button_press_event = calf_pattern_button_press;
     widget_class->button_release_event = calf_pattern_button_release;
     widget_class->motion_notify_event = calf_pattern_pointer_motion;

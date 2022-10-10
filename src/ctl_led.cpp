@@ -32,13 +32,11 @@ calf_led_new()
 }
 
 static gboolean
-calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_led_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_LED(widget));
 
     CalfLed *self = CALF_LED(widget);
-    GdkWindow *window = gtk_widget_get_window(widget);
-    cairo_t *c = gdk_cairo_create(window);
     
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);
@@ -76,11 +74,11 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_set_source_rgb (cache_cr, 0, 0, 0);
         cairo_fill(cache_cr);
         
-        cairo_destroy( cache_cr );
+        cairo_destroy(cache_cr);
     }
     
-    cairo_set_source_surface( c, self->cache_surface, x, y );
-    cairo_paint( c );
+    cairo_set_source_surface( cr, self->cache_surface, x, y );
+    cairo_paint( cr );
     
     ox += x;
     oy += y;
@@ -153,9 +151,9 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
             break;
     }
     
-    cairo_rectangle(c, ox + 1, oy + 1, sx - 2, sy - 2);
-    cairo_set_source (c, pt);
-    cairo_fill_preserve(c);
+    cairo_rectangle(cr, ox + 1, oy + 1, sx - 2, sy - 2);
+    cairo_set_source (cr, pt);
+    cairo_fill_preserve(cr);
     
     float glass;
     gtk_widget_style_get(widget, "glass",  &glass, NULL);
@@ -166,12 +164,12 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_pattern_add_color_stop_rgba (pt, 0.4,   1, 1, 1, 0.1 * glass);
         cairo_pattern_add_color_stop_rgba (pt, 0.401, 0, 0, 0, 0.0);
         cairo_pattern_add_color_stop_rgba (pt, 1,     0, 0, 0, 0.2 * glass);
-        cairo_set_source (c, pt);
-        cairo_fill(c);
+        cairo_set_source (cr, pt);
+        cairo_fill(cr);
         cairo_pattern_destroy(pt);
     }
     
-    cairo_destroy(c);
+    // cairo_destroy(cr);
 
     return TRUE;
 }
@@ -211,7 +209,7 @@ static void
 calf_led_class_init (CalfLedClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_led_expose;
+    widget_class->draw = calf_led_draw;
     widget_class->size_request = calf_led_size_request;
     widget_class->size_allocate = calf_led_size_allocate;
     widget_class->button_press_event = calf_led_button_press;

@@ -37,13 +37,11 @@ calf_frame_new(const char *label)
     return widget;
 }
 static gboolean
-calf_frame_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_frame_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_FRAME(widget));
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = gtk_widget_get_window(widget);
-        cairo_t *c = gdk_cairo_create(window);
         cairo_text_extents_t extents;
         
         GtkAllocation allocation;
@@ -63,57 +61,57 @@ calf_frame_expose (GtkWidget *widget, GdkEventExpose *event)
         
         float r, g, b;
     
-        cairo_rectangle(c, ox, oy, sx, sy);
-        cairo_clip(c);
+        cairo_rectangle(cr, ox, oy, sx, sy);
+        cairo_clip(cr);
         
         
         const gchar *lab = gtk_frame_get_label(GTK_FRAME(widget));
         
-        cairo_select_font_face(c, "Sans",
+        cairo_select_font_face(cr, "Sans",
               CAIRO_FONT_SLANT_NORMAL,
               CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(c, size);
+        cairo_set_font_size(cr, size);
         
-        cairo_text_extents(c, lab, &extents);
+        cairo_text_extents(cr, lab, &extents);
         
         double lw = extents.width + txp * 2.;
         
-        cairo_set_line_width(c, 1.);
+        cairo_set_line_width(cr, 1.);
         
-        cairo_move_to(c, ox + rad + txp + m, oy + size - 2 + m);
+        cairo_move_to(cr, ox + rad + txp + m, oy + size - 2 + m);
         get_text_color(widget, NULL, &r, &g, &b);
-        cairo_set_source_rgb(c, r, g, b);
-        cairo_show_text(c, lab);
+        cairo_set_source_rgb(cr, r, g, b);
+        cairo_show_text(cr, lab);
         get_fg_color(widget, NULL, &r, &g, &b);
-        cairo_set_source_rgb(c, r, g, b);
+        cairo_set_source_rgb(cr, r, g, b);
         
         // top left
-        cairo_move_to(c, ox + m, oy + pad + rad + m);
-        cairo_arc (c, ox + rad + m, oy + rad + pad + m, rad, 1 * M_PI, 1.5 * M_PI);
+        cairo_move_to(cr, ox + m, oy + pad + rad + m);
+        cairo_arc (cr, ox + rad + m, oy + rad + pad + m, rad, 1 * M_PI, 1.5 * M_PI);
         // top
-        cairo_move_to(c, ox + rad + lw + m, oy + pad + m);
-        cairo_line_to(c, ox + sx - rad - m, oy + pad + m);
+        cairo_move_to(cr, ox + rad + lw + m, oy + pad + m);
+        cairo_line_to(cr, ox + sx - rad - m, oy + pad + m);
         // top right
-        cairo_arc (c, ox + sx - rad - m, oy + rad + pad + m, rad, 1.5 * M_PI, 2 * M_PI);
+        cairo_arc (cr, ox + sx - rad - m, oy + rad + pad + m, rad, 1.5 * M_PI, 2 * M_PI);
         // right
-        cairo_line_to(c, ox + sx - m, oy + sy - rad - m);
+        cairo_line_to(cr, ox + sx - m, oy + sy - rad - m);
         // bottom right
-        cairo_arc (c, ox + sx - rad - m, oy + sy - rad - m, rad, 0 * M_PI, 0.5 * M_PI);
+        cairo_arc (cr, ox + sx - rad - m, oy + sy - rad - m, rad, 0 * M_PI, 0.5 * M_PI);
         // bottom
-        cairo_line_to(c, ox + rad + m, oy + sy - m);
+        cairo_line_to(cr, ox + rad + m, oy + sy - m);
         // bottom left
-        cairo_arc (c, ox + rad + m, oy + sy - rad - m, rad, 0.5 * M_PI, 1 * M_PI);
+        cairo_arc (cr, ox + rad + m, oy + sy - rad - m, rad, 0.5 * M_PI, 1 * M_PI);
         // left
-        cairo_line_to(c, ox + m, oy + rad + pad + m);
-        cairo_stroke(c);
+        cairo_line_to(cr, ox + m, oy + rad + pad + m);
+        cairo_stroke(cr);
         
-        cairo_destroy(c);
+        // cairo_destroy(cr);
     }
-    if (gtk_bin_get_child(GTK_BIN(widget))) {
-        gtk_container_propagate_expose(GTK_CONTAINER(widget),
-                                       gtk_bin_get_child(GTK_BIN(widget)),
-                                       event);
-    }
+    // if (gtk_bin_get_child(GTK_BIN(widget))) {
+    //     gtk_container_propagate_expose(GTK_CONTAINER(widget),
+    //                                    gtk_bin_get_child(GTK_BIN(widget)),
+    //                                    event);
+    // }
     return FALSE;
 }
 
@@ -121,7 +119,7 @@ static void
 calf_frame_class_init (CalfFrameClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_frame_expose;
+    widget_class->draw = calf_frame_draw;
     gtk_widget_class_install_style_property(
         widget_class, g_param_spec_float("border-radius", "Border Radius", "Generate round edges",
         0, 24, 4, GParamFlags(G_PARAM_READWRITE)));

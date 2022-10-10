@@ -101,7 +101,7 @@ static void calf_tuner_draw_dot(cairo_t * ctx, float cents, int sx, int sy, int 
 }
 
 static gboolean
-calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_tuner_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_TUNER(widget));
     CalfTuner *tuner = CALF_TUNER(widget);
@@ -119,13 +119,12 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
     float fsize = fpt * sy / 25; // 9pt @ 25px height
     
     // cairo initialization stuff
-    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *ctx_back;
     
     if( tuner->background == NULL ) {
         // looks like its either first call or the widget has been resized.
         // create the background surface (stolen from line graph)...
-        cairo_surface_t *window_surface = cairo_get_target(c);
+        cairo_surface_t *window_surface = cairo_get_target(cr);
         tuner->background =
             cairo_surface_create_similar(window_surface,
                                          CAIRO_CONTENT_COLOR,
@@ -139,32 +138,32 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
         ctx_back = cairo_create(tuner->background);
     }
     
-    cairo_set_source_surface(c, cairo_get_target(ctx_back), 0, 0);
-    cairo_paint(c);
+    cairo_set_source_surface(cr, cairo_get_target(ctx_back), 0, 0);
+    cairo_paint(cr);
     
-    calf_tuner_draw_dot(c, tuner->cents / 100, sx, sy, ox, oy);
+    calf_tuner_draw_dot(cr, tuner->cents / 100, sx, sy, ox, oy);
     
     static const char notenames[] = "C\0\0C#\0D\0\0D#\0E\0\0F\0\0F#\0G\0\0G#\0A\0\0A#\0B\0\0";
     const char * note = notenames + (tuner->note % 12) * 3;
     int oct = int(tuner->note / 12) - 2;
-    cairo_set_source_rgba(c, 0.35, 0.4, 0.2, 0.9);
+    cairo_set_source_rgba(cr, 0.35, 0.4, 0.2, 0.9);
     cairo_text_extents_t te;
     if (tuner->note) {
         // Note name
-        cairo_select_font_face(c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-        cairo_set_font_size(c, fsize);
-        cairo_text_extents (c, note, &te);
-        cairo_move_to (c, ox + marg - te.x_bearing, oy + marg - te.y_bearing);
-        cairo_show_text (c, note);
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_set_font_size(cr, fsize);
+        cairo_text_extents (cr, note, &te);
+        cairo_move_to (cr, ox + marg - te.x_bearing, oy + marg - te.y_bearing);
+        cairo_show_text (cr, note);
         // octave
         char octn[20];
         sprintf(octn, "%d", oct);
-        cairo_set_font_size(c, fsize / 2);
-        cairo_text_extents (c, octn, &te);
-        cairo_show_text(c, octn);
+        cairo_set_font_size(cr, fsize / 2);
+        cairo_text_extents (cr, octn, &te);
+        cairo_show_text(cr, octn);
         // right hand side
-        cairo_set_font_size(c, fsize / 4);
-        cairo_select_font_face(c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(cr, fsize / 4);
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         const char * mnotet = "MIDI Note: ";
         char mnotev[32];
         sprintf(mnotev, "%d", tuner->note);
@@ -173,13 +172,13 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
         sprintf(centsv, "%.4f", tuner->cents);
         
         // calc text extents
-        cairo_text_extents (c, mnotet, &te);
+        cairo_text_extents (cr, mnotet, &te);
         int mtw = te.width;
-        cairo_text_extents (c, "999", &te);
+        cairo_text_extents (cr, "999", &te);
         int mvw = te.width;
-        cairo_text_extents (c, centst, &te);
+        cairo_text_extents (cr, centst, &te);
         int ctw = te.width;
-        cairo_text_extents (c, "-9.9999", &te);
+        cairo_text_extents (cr, "-9.9999", &te);
         int cvw = te.width;
         float xb = te.x_bearing;
         
@@ -187,18 +186,18 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
         float vw = std::max(cvw, mvw);
         
         // draw MIDI note
-        cairo_move_to(c, ox + sx - tw - vw - marg * 2, oy + marg - te.y_bearing);
-        cairo_show_text(c, mnotet);
-        cairo_move_to(c, ox + sx - vw - xb - marg, oy + marg - te.y_bearing);
-        cairo_show_text(c, mnotev);
+        cairo_move_to(cr, ox + sx - tw - vw - marg * 2, oy + marg - te.y_bearing);
+        cairo_show_text(cr, mnotet);
+        cairo_move_to(cr, ox + sx - vw - xb - marg, oy + marg - te.y_bearing);
+        cairo_show_text(cr, mnotev);
         // draw cents
-        cairo_move_to(c, ox + sx - tw - vw - marg * 2, oy + marg + te.height + 5 - te.y_bearing);
-        cairo_show_text(c, centst);
-        cairo_move_to(c, ox + sx - vw - xb - marg, oy + marg + te.height + 5 - te.y_bearing);
-        cairo_show_text(c, centsv);
+        cairo_move_to(cr, ox + sx - tw - vw - marg * 2, oy + marg + te.height + 5 - te.y_bearing);
+        cairo_show_text(cr, centst);
+        cairo_move_to(cr, ox + sx - vw - xb - marg, oy + marg + te.height + 5 - te.y_bearing);
+        cairo_show_text(cr, centsv);
     }
     
-    cairo_destroy(c);
+    // cairo_destroy(cr);
     cairo_destroy(ctx_back);
     return TRUE;
 }
@@ -229,7 +228,7 @@ static void
 calf_tuner_class_init (CalfTunerClass *klass)
 {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_tuner_expose;
+    widget_class->draw = calf_tuner_draw;
     widget_class->size_request = calf_tuner_size_request;
     widget_class->size_allocate = calf_tuner_size_allocate;
 }

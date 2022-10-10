@@ -28,14 +28,12 @@
 #include <sys/time.h>
 
 static gboolean
-calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
+calf_tube_draw (GtkWidget *widget, cairo_t *cr)
 {
     g_assert(CALF_IS_TUBE(widget));
     
     CalfTube  *self   = CALF_TUBE(widget);
-    GdkWindow *window = gtk_widget_get_window(widget);
     GtkStyle  *style  = gtk_widget_get_style(widget);
-    cairo_t *c = gdk_cairo_create(window);
 
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);
@@ -46,7 +44,7 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     if( self->cache_surface == NULL ) {
         // looks like its either first call or the widget has been resized.
         // create the cache_surface.
-        cairo_surface_t *window_surface = cairo_get_target( c );
+        cairo_surface_t *window_surface = cairo_get_target( cr );
         self->cache_surface =
           cairo_surface_create_similar(window_surface,
                                        CAIRO_CONTENT_COLOR,
@@ -117,8 +115,8 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_destroy( cache_cr );
     }
     
-    cairo_set_source_surface( c, self->cache_surface, 0,0 );
-    cairo_paint( c );
+    cairo_set_source_surface( cr, self->cache_surface, 0,0 );
+    cairo_paint( cr );
     
     // get microseconds
     timeval tv;
@@ -145,13 +143,13 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     switch(self->direction) {
         case 1:
             // vertical
-            cairo_arc(c, ox + sx * 0.5, oy + sy * 0.2, sx, 0, 2 * M_PI);
+            cairo_arc(cr, ox + sx * 0.5, oy + sy * 0.2, sx, 0, 2 * M_PI);
             pat = cairo_pattern_create_radial (ox + sx * 0.5, oy + sy * 0.2, 3, ox + sx * 0.5, oy + sy * 0.2, sx);
             break;
         default:
         case 2:
             // horizontal
-            cairo_arc(c, ox + sx * 0.8, oy + sy * 0.5, sy, 0, 2 * M_PI);
+            cairo_arc(cr, ox + sx * 0.8, oy + sy * 0.5, sy, 0, 2 * M_PI);
             pat = cairo_pattern_create_radial (ox + sx * 0.8, oy + sy * 0.5, 3, ox + sx * 0.8, oy + sy * 0.5, sy);
             break;
     }
@@ -159,19 +157,19 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_pattern_add_color_stop_rgba (pat, 0.3,  1,   0.8,  0.3, value * 0.4);
     cairo_pattern_add_color_stop_rgba (pat, 0.31, 0.9, 0.5,  0.1,  value * 0.5);
     cairo_pattern_add_color_stop_rgba (pat, 1,    0.0, 0.2,  0.7,  0);
-    cairo_set_source (c, pat);
-    cairo_fill(c);
+    cairo_set_source (cr, pat);
+    cairo_fill(cr);
     // draw lower light
     switch(self->direction) {
         case 1:
             // vertical
-            cairo_arc(c, ox + sx * 0.5, oy + sy * 0.75, sx / 2, 0, 2 * M_PI);
+            cairo_arc(cr, ox + sx * 0.5, oy + sy * 0.75, sx / 2, 0, 2 * M_PI);
             pat = cairo_pattern_create_radial (ox + sx * 0.5, oy + sy * 0.75, 2, ox + sx * 0.5, oy + sy * 0.75, sx / 2);
             break;
         default:
         case 2:
             // horizontal
-            cairo_arc(c, ox + sx * 0.25, oy + sy * 0.5, sy / 2, 0, 2 * M_PI);
+            cairo_arc(cr, ox + sx * 0.25, oy + sy * 0.5, sy / 2, 0, 2 * M_PI);
             pat = cairo_pattern_create_radial (ox + sx * 0.25, oy + sy * 0.5, 2, ox + sx * 0.25, oy + sy * 0.5, sy / 2);
             break;
     }
@@ -179,9 +177,9 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_pattern_add_color_stop_rgba (pat, 0.3,  1,   0.8,  0.3, value * 0.4);
     cairo_pattern_add_color_stop_rgba (pat, 0.31, 0.9, 0.5,  0.1,  value * 0.5);
     cairo_pattern_add_color_stop_rgba (pat, 1,    0.0, 0.2,  0.7,  0);
-    cairo_set_source (c, pat);
-    cairo_fill(c);
-    cairo_destroy(c);
+    cairo_set_source (cr, pat);
+    cairo_fill(cr);
+    // cairo_destroy(cr);
     return TRUE;
 }
 
@@ -244,7 +242,7 @@ calf_tube_class_init (CalfTubeClass *klass)
 {
     // GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
-    widget_class->expose_event = calf_tube_expose;
+    widget_class->draw = calf_tube_draw;
     widget_class->size_request = calf_tube_size_request;
     widget_class->size_allocate = calf_tube_size_allocate;
 }
