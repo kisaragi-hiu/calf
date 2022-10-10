@@ -42,7 +42,7 @@ calf_meter_scale_expose (GtkWidget *widget, GdkEventExpose *event)
     CalfMeterScale *ms = CALF_METER_SCALE(widget);
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = widget->window;
+        GdkWindow *window = gtk_widget_get_window(widget);
         cairo_t *cr = gdk_cairo_create(GDK_DRAWABLE(window));
         cairo_text_extents_t extents;
         

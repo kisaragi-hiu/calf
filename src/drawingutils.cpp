@@ -30,7 +30,7 @@ void display_background(GtkWidget *widget, cairo_t* c, int x, int y, int sx, int
     float br = brightness * 0.5 + 0.5;
     //printf("bevel:%.2f brightness:%.2f shadow:%d lights:%.2f dull:%.2f\n", bevel, brightness, shadow, lights, dull);
     if (!c) {
-        GdkWindow *window = widget->window;
+        GdkWindow *window = gtk_widget_get_window(widget);
         c = gdk_cairo_create(GDK_DRAWABLE(window));
     }
     
@@ -122,7 +122,7 @@ void display_background(GtkWidget *widget, cairo_t* c, int x, int y, int sx, int
 }
 
 void draw_rect (GtkWidget * widget, const gchar * type, GtkStateType * state, gint x, gint y, gint width, gint height, float rad, float bevel) {
-    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     float r, g, b;
     get_color(widget, type, state, &r, &g, &b);
     create_rectangle(cr, x, y, width, height, rad);
@@ -143,7 +143,7 @@ void _draw_inset (cairo_t * cr, gint x, gint y, gint width, gint height, float r
     cairo_fill(cr);
 }
 void draw_inset (GtkWidget * widget, gint x, gint y, gint width, gint height, float rad, gint depth) {
-    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     _draw_inset(cr, x, y, width, height, rad, depth);
     cairo_destroy(cr);
 }
@@ -156,7 +156,7 @@ void _draw_glass (cairo_t *cr, gint x, gint y, gint width, gint height, float ra
     cairo_fill(cr);
 }
 void draw_glass (GtkWidget * widget, gint x, gint y, gint width, gint height, float rad) {
-    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t * cr = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     _draw_glass(cr, x, y, width, height, rad);
     cairo_destroy(cr);
 }

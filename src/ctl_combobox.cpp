@@ -53,7 +53,7 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
         
         GtkComboBox *cb = GTK_COMBO_BOX(widget);
         CalfCombobox *ccb = CALF_COMBOBOX(widget);
-        GdkWindow *window = widget->window;
+        GdkWindow *window = gtk_widget_get_window(widget);
         cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
         
         GtkTreeModel *model = gtk_combo_box_get_model(cb);

@@ -97,7 +97,7 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
         printf("pixbuf: %d x %d\n", iw, ih);
         
     GtkAdjustment *adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-    cairo_t *ctx = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t *ctx = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     
     float r, g, b;
     GtkStateType state;
@@ -142,7 +142,7 @@ calf_knob_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_clip(ctx);
     
     // draw background
-    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
     gdk_cairo_set_source_pixbuf (cr, pixbuf, ox, oy);
     cairo_paint (cr);
     cairo_destroy (cr);

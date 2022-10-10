@@ -188,7 +188,7 @@ calf_fader_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_FADER(widget));
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window = widget->window;
+        GdkWindow *window = gtk_widget_get_window(widget);
         GtkScale  *scale  = GTK_SCALE(widget);
         GtkRange  *range  = GTK_RANGE(widget);
         CalfFader *fader  = CALF_FADER(widget);

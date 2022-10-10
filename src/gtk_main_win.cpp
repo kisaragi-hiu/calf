@@ -757,7 +757,7 @@ window_state describe_window (GtkWindow *win)
 
 void position_window (GtkWidget *win, window_state state)
 {
-    gdk_window_move_resize(win->window, state.x, state.y, state.width, state.height);
+    gdk_window_move_resize(gtk_widget_get_window(win), state.x, state.y, state.width, state.height);
     gtk_window_set_screen(GTK_WINDOW(win), state.screen);
 }
 

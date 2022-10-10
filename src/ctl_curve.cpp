@@ -43,7 +43,7 @@ calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_CURVE(widget));
     
     CalfCurve *self = CALF_CURVE(widget);
-    GdkWindow *window = widget->window;
+    GdkWindow *window = gtk_widget_get_window(widget);
     cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
     GdkColor scHot = { 0, 65535, 0, 0 };
     GdkColor scPoint = { 0, 65535, 65535, 65535 };
@@ -87,21 +87,23 @@ calf_curve_realize(GtkWidget *widget)
     gtk_widget_set_realized(widget, TRUE);
 
     GdkWindowAttr attributes;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(widget, &allocation);
     attributes.event_mask = GDK_EXPOSURE_MASK | GDK_BUTTON1_MOTION_MASK | 
         GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | 
         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | 
         GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK;
-    attributes.x = widget->allocation.x;
-    attributes.y = widget->allocation.y;
-    attributes.width = widget->allocation.width;
-    attributes.height = widget->allocation.height;
+    attributes.x = allocation.x;
+    attributes.y = allocation.y;
+    attributes.width = allocation.width;
+    attributes.height = allocation.height;
     attributes.wclass = GDK_INPUT_OUTPUT;
     attributes.window_type = GDK_WINDOW_CHILD;
 
-    widget->window = gdk_window_new(gtk_widget_get_parent_window (widget), &attributes, GDK_WA_X | GDK_WA_Y);
+    gtk_widget_set_window(widget, gdk_window_new(gtk_widget_get_parent_window (widget), &attributes, GDK_WA_X | GDK_WA_Y));
 
-    gdk_window_set_user_data(widget->window, widget);
-    widget->style = gtk_style_attach(widget->style, widget->window);
+    gdk_window_set_user_data(gtk_widget_get_window(widget), widget);
+    widget->style = gtk_style_attach(widget->style, gtk_widget_get_window(widget));
 }
 
 static void
@@ -120,10 +122,10 @@ calf_curve_size_allocate (GtkWidget *widget,
 {
     g_assert(CALF_IS_CURVE(widget));
     
-    widget->allocation = *allocation;
+    gtk_widget_set_allocation(widget, allocation);
     
     if (gtk_widget_get_realized(widget))
-        gdk_window_move_resize(widget->window, allocation->x, allocation->y, allocation->width, allocation->height );
+        gdk_window_move_resize(gtk_widget_get_window(widget), allocation->x, allocation->y, allocation->width, allocation->height );
 }
 
 static int 
@@ -178,7 +180,7 @@ calf_curve_button_press (GtkWidget *widget, GdkEventButton *event)
     gtk_widget_queue_draw(widget);
     if (self->sink)
         self->sink->curve_changed(self, *self->points);
-    gdk_window_set_cursor(widget->window, self->hand_cursor);
+    gdk_window_set_cursor(gtk_widget_get_window(widget), self->hand_cursor);
     return TRUE;
 }
 
@@ -194,7 +196,7 @@ calf_curve_button_release (GtkWidget *widget, GdkEventButton *event)
     if (self->sink)
         self->sink->curve_changed(self, *self->points);
     gtk_widget_queue_draw(widget);
-    gdk_window_set_cursor(widget->window, self->points->size() >= self->point_limit ? self->arrow_cursor : self->pencil_cursor);
+    gdk_window_set_cursor(gtk_widget_get_window(widget), self->points->size() >= self->point_limit ? self->arrow_cursor : self->pencil_cursor);
     return FALSE;
 }
 
@@ -227,9 +229,9 @@ calf_curve_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
     {
         int insert_pt = -1;
         if (find_nearest(self, event->x, event->y, insert_pt) == -1)
-            gdk_window_set_cursor(widget->window, self->points->size() >= self->point_limit ? self->arrow_cursor : self->pencil_cursor);
+            gdk_window_set_cursor(gtk_widget_get_window(widget), self->points->size() >= self->point_limit ? self->arrow_cursor : self->pencil_cursor);
         else
-            gdk_window_set_cursor(widget->window, self->hand_cursor);
+            gdk_window_set_cursor(gtk_widget_get_window(widget), self->hand_cursor);
     }
     return FALSE;
 }

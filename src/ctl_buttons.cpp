@@ -220,7 +220,7 @@ calf_button_expose (GtkWidget *widget, GdkEventExpose *event)
     
     if (gtk_widget_is_drawable (widget)) {
         
-        GdkWindow *window    = widget->window;
+        GdkWindow *window    = gtk_widget_get_window(widget);
         GtkWidget *child     = GTK_BIN (widget)->child;
         cairo_t *c           = gdk_cairo_create(GDK_DRAWABLE(window));
         
@@ -542,7 +542,7 @@ calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
     int x = widget->allocation.x + widget->allocation.width / 2 - width / 2;
     int y = widget->allocation.y + widget->allocation.height / 2 - height / 2;
     
-    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(widget->window));
+    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
     gdk_cairo_set_source_pixbuf (cr, self->image[self->state], x, y);
     cairo_paint (cr);
     cairo_destroy (cr);

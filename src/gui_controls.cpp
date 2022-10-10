@@ -1360,9 +1360,9 @@ void line_graph_param_control::get()
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
     CalfLineGraph *clg = CALF_LINE_GRAPH(widget);
 
-    if (tw && gtk_widget_is_toplevel(tw) && widget->window)
+    if (tw && gtk_widget_is_toplevel(tw) && gtk_widget_get_window(widget))
     {
-        int ws = gdk_window_get_state(widget->window);
+        int ws = gdk_window_get_state(gtk_widget_get_window(widget));
         if (ws & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED))
             return;
 
@@ -1392,10 +1392,10 @@ void line_graph_param_control::set()
     _GUARD_CHANGE_
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
     CalfLineGraph *clg = CALF_LINE_GRAPH(widget);
-    if (tw && gtk_widget_is_toplevel(tw) && widget->window)
+    if (tw && gtk_widget_is_toplevel(tw) && gtk_widget_get_window(widget))
     {
         bool force = false;
-        int ws = gdk_window_get_state(widget->window);
+        int ws = gdk_window_get_state(gtk_widget_get_window(widget));
         if (ws & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED))
             return;
         
@@ -1502,7 +1502,7 @@ void phase_graph_param_control::set()
 {
     _GUARD_CHANGE_
     GtkWidget *tw = gtk_widget_get_toplevel(widget);
-    if (tw && gtk_widget_is_toplevel(tw) && widget->window) {
+    if (tw && gtk_widget_is_toplevel(tw) && gtk_widget_get_window(widget)) {
         gtk_widget_queue_draw(widget);
     }
 }
@@ -1545,7 +1545,7 @@ void tuner_param_control::set()
     CalfTuner *tuner = CALF_TUNER(widget);
     tuner->note = gui->plugin->get_param_value(param_no);
     tuner->cents = gui->plugin->get_param_value(cents_no);
-    if (tw && gtk_widget_is_toplevel(tw) && widget->window) {
+    if (tw && gtk_widget_is_toplevel(tw) && gtk_widget_get_window(widget)) {
         gtk_widget_queue_draw(widget);
     }
 }

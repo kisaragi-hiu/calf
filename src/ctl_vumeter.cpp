@@ -31,7 +31,7 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_VUMETER(widget));
 
     CalfVUMeter *vu = CALF_VUMETER(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     
     float r, g, b;
     
@@ -366,8 +366,8 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
         cairo_fill(c);
     }
     cairo_destroy(c);
-    //gtk_paint_shadow(widget->style, widget->window, GTK_STATE_NORMAL, GTK_SHADOW_IN, NULL, widget, NULL, ox - 2, oy - 2, sx + 4, sy + 4);
-    //printf("exposed %p %d+%d\n", widget->window, widget->allocation.x, widget->allocation.y);
+    //gtk_paint_shadow(widget->style, gtk_widget_get_window(widget), GTK_STATE_NORMAL, GTK_SHADOW_IN, NULL, widget, NULL, ox - 2, oy - 2, sx + 4, sy + 4);
+    //printf("exposed %p %d+%d\n", gtk_widget_get_window(widget), widget->allocation.x, widget->allocation.y);
 
     return TRUE;
 }

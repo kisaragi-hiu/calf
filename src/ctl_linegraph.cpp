@@ -657,7 +657,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     if (lg->debug) printf("\n\n####### exposing %d #######\n", lg->generation);
     
     // cairo context of the window
-    cairo_t *c            = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t *c            = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     
     
     // recreate surfaces if someone needs it (init of the widget,
@@ -1187,10 +1187,10 @@ calf_line_graph_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
     if (handle_hovered != lg->handle_hovered) {
         if (lg->handle_grabbed >= 0 || 
             handle_hovered != -1) {
-            gdk_window_set_cursor(widget->window, lg->hand_cursor);
+            gdk_window_set_cursor(gtk_widget_get_window(widget), lg->hand_cursor);
             lg->handle_hovered = handle_hovered;
         } else {
-            gdk_window_set_cursor(widget->window, lg->arrow_cursor);
+            gdk_window_set_cursor(gtk_widget_get_window(widget), lg->arrow_cursor);
             lg->handle_hovered = -1;
         }
         lg->handle_redraw = 1;
@@ -1331,7 +1331,7 @@ calf_line_graph_leave (GtkWidget *widget, GdkEventCrossing *event)
         calf_line_graph_expose_request(widget, true);
     lg->mouse_x = -1;
     lg->mouse_y = -1;
-    gdk_window_set_cursor(widget->window, lg->arrow_cursor);
+    gdk_window_set_cursor(gtk_widget_get_window(widget), lg->arrow_cursor);
     lg->handle_hovered = -1;
     lg->handle_redraw = 1;
     calf_line_graph_expose_request(widget, true);

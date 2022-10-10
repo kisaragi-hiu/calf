@@ -149,7 +149,7 @@ calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
 {
     g_assert(CALF_IS_PATTERN(widget));
     CalfPattern *p = CALF_PATTERN(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     if (p->force_redraw) {
         p->pad_x  = widget->style->xthickness;
         p->pad_y  = widget->style->ythickness;
@@ -251,11 +251,11 @@ calf_pattern_pointer_motion (GtkWidget *widget, GdkEventMotion *event)
         calf_pattern_handle hh = calf_pattern_get_handle_at(p, event->x, event->y);
         if (hh.bar != p->handle_hovered.bar or hh.beat != p->handle_hovered.beat) {
             if (hh.bar >= 0 and hh.beat >= 0) {
-                //gdk_window_set_cursor(widget->window, p->hand_cursor);
+                //gdk_window_set_cursor(gtk_widget_get_window(widget), p->hand_cursor);
                 p->handle_hovered.bar  = hh.bar;
                 p->handle_hovered.beat = hh.beat;
             } else {
-                //gdk_window_set_cursor(widget->window, NULL);
+                //gdk_window_set_cursor(gtk_widget_get_window(widget), NULL);
                 p->handle_hovered.bar  = -1;
                 p->handle_hovered.beat = -1;
             }
@@ -370,7 +370,7 @@ calf_pattern_leave (GtkWidget *widget, GdkEventCrossing *event)
     CalfPattern *p = CALF_PATTERN(widget);
     p->handle_hovered.bar  = -1;
     p->handle_hovered.beat = -1;
-    //gdk_window_set_cursor(widget->window, NULL);
+    //gdk_window_set_cursor(gtk_widget_get_window(widget), NULL);
     gtk_widget_queue_draw(widget);
     return TRUE;
 }

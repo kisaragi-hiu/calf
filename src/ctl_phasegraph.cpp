@@ -128,7 +128,7 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     bool display = true;
     
     // cairo initialization stuff
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(widget->window));
+    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
     cairo_t *ctx_back;
     cairo_t *ctx_cache;
     
@@ -230,7 +230,7 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_destroy(c);
     cairo_destroy(ctx_back);
     cairo_destroy(ctx_cache);
-    // printf("exposed %p %dx%d %d+%d\n", widget->window, event->area.x, event->area.y, event->area.width, event->area.height);
+    // printf("exposed %p %dx%d %d+%d\n", gtk_widget_get_window(widget), event->area.x, event->area.y, event->area.width, event->area.height);
     return TRUE;
 }
 
