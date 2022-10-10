@@ -35,7 +35,7 @@ calf_tube_expose (GtkWidget *widget, GdkEventExpose *event)
     CalfTube  *self   = CALF_TUBE(widget);
     GdkWindow *window = gtk_widget_get_window(widget);
     GtkStyle  *style  = gtk_widget_get_style(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+    cairo_t *c = gdk_cairo_create(window);
 
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);

@@ -54,7 +54,7 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
         GtkComboBox *cb = GTK_COMBO_BOX(widget);
         CalfCombobox *ccb = CALF_COMBOBOX(widget);
         GdkWindow *window = gtk_widget_get_window(widget);
-        cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+        cairo_t *c = gdk_cairo_create(window);
         
         GtkTreeModel *model = gtk_combo_box_get_model(cb);
         GtkTreeIter iter;
@@ -95,7 +95,7 @@ calf_combobox_expose (GtkWidget *widget, GdkEventExpose *event)
         if (ccb->arrow) {
             int pw = gdk_pixbuf_get_width(ccb->arrow);
             int ph = gdk_pixbuf_get_height(ccb->arrow);
-            cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(window));
+            cairo_t *cr = gdk_cairo_create(window);
             gdk_cairo_set_source_pixbuf(cr, ccb->arrow,
                                         x + sx - padx - pw,
                                         y + (sy - ph) / 2);

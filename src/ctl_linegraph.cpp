@@ -659,7 +659,7 @@ calf_line_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     if (lg->debug) printf("\n\n####### exposing %d #######\n", lg->generation);
     
     // cairo context of the window
-    cairo_t *c            = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *c            = gdk_cairo_create(gtk_widget_get_window(widget));
     
     
     // recreate surfaces if someone needs it (init of the widget,

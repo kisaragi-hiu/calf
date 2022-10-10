@@ -53,7 +53,7 @@ static gboolean
     
     [PrefType] *self = [PREFTYPE](widget);
     GdkWindow *window = widget->window;
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+    cairo_t *c = gdk_cairo_create(window);
     cairo_destroy(c);
 
     return TRUE;

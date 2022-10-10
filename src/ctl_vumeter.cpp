@@ -31,7 +31,7 @@ calf_vumeter_expose (GtkWidget *widget, GdkEventExpose *event)
     g_assert(CALF_IS_VUMETER(widget));
 
     CalfVUMeter *vu = CALF_VUMETER(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     
     float r, g, b;
 
@@ -442,7 +442,7 @@ calf_vumeter_init (CalfVUMeter *self)
     self->disp_value = 0.f;
     self->value = 0.f;
     gtk_widget_set_has_window(widget, FALSE);
-    g_signal_connect(GTK_OBJECT(widget), "unrealize", G_CALLBACK(calf_vumeter_unrealize), (gpointer)self);
+    g_signal_connect(widget, "unrealize", G_CALLBACK(calf_vumeter_unrealize), (gpointer)self);
 }
 
 GtkWidget *

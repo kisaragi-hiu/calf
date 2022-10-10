@@ -119,7 +119,7 @@ calf_tuner_expose (GtkWidget *widget, GdkEventExpose *event)
     float fsize = fpt * sy / 25; // 9pt @ 25px height
     
     // cairo initialization stuff
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *ctx_back;
     
     if( tuner->background == NULL ) {

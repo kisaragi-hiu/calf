@@ -44,7 +44,7 @@ calf_curve_expose (GtkWidget *widget, GdkEventExpose *event)
     
     CalfCurve *self = CALF_CURVE(widget);
     GdkWindow *window = gtk_widget_get_window(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+    cairo_t *c = gdk_cairo_create(window);
     GdkColor scHot = { 0, 65535, 0, 0 };
     GdkColor scPoint = { 0, 65535, 65535, 65535 };
     GdkColor scLine = { 0, 32767, 32767, 32767 };

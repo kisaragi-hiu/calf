@@ -43,7 +43,7 @@ calf_frame_expose (GtkWidget *widget, GdkEventExpose *event)
     if (gtk_widget_is_drawable (widget)) {
         
         GdkWindow *window = gtk_widget_get_window(widget);
-        cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+        cairo_t *c = gdk_cairo_create(window);
         cairo_text_extents_t extents;
         
         GtkAllocation allocation;

@@ -195,7 +195,7 @@ calf_fader_expose (GtkWidget *widget, GdkEventExpose *event)
         GtkRange  *range  = GTK_RANGE(widget);
         CalfFader *fader  = CALF_FADER(widget);
         CalfFaderLayout l = fader->layout;
-        cairo_t   *c      = gdk_cairo_create(GDK_DRAWABLE(window));
+        cairo_t   *c      = gdk_cairo_create(window);
         int horiz         = fader->horizontal;
         cairo_rectangle(c, l.x, l.y, l.w, l.h);
         cairo_clip(c);

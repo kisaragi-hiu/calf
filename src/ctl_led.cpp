@@ -38,7 +38,7 @@ calf_led_expose (GtkWidget *widget, GdkEventExpose *event)
 
     CalfLed *self = CALF_LED(widget);
     GdkWindow *window = gtk_widget_get_window(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+    cairo_t *c = gdk_cairo_create(window);
     
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);

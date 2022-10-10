@@ -130,7 +130,7 @@ calf_phase_graph_expose (GtkWidget *widget, GdkEventExpose *event)
     bool display = true;
     
     // cairo initialization stuff
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *ctx_back;
     cairo_t *ctx_cache;
     

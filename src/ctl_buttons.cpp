@@ -47,7 +47,7 @@ calf_toggle_expose (GtkWidget *widget, GdkEventExpose *event)
     float sy = off * ph / 2;
     float x = wcx - pcx;
     float y = wcy - pcy;
-    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     // sy is used to select the right part of the image.
     // Top half is off, bottom half is on.
     gdk_cairo_set_source_pixbuf (cr, self->toggle_image, x, y - sy);
@@ -224,7 +224,7 @@ calf_button_expose (GtkWidget *widget, GdkEventExpose *event)
         
         GdkWindow *window    = gtk_widget_get_window(widget);
         GtkWidget *child     = gtk_bin_get_child(GTK_BIN(widget));
-        cairo_t *c           = gdk_cairo_create(GDK_DRAWABLE(window));
+        cairo_t *c           = gdk_cairo_create(window);
         
         GtkAllocation allocation;
         gtk_widget_get_allocation(widget, &allocation);
@@ -548,7 +548,7 @@ calf_tap_button_expose (GtkWidget *widget, GdkEventExpose *event)
     int x = allocation.x + allocation.width / 2 - width / 2;
     int y = allocation.y + allocation.height / 2 - height / 2;
     
-    cairo_t *cr = gdk_cairo_create (GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     gdk_cairo_set_source_pixbuf (cr, self->image[self->state], x, y);
     cairo_paint (cr);
     cairo_destroy (cr);

@@ -43,7 +43,7 @@ calf_keyboard_expose (GtkWidget *widget, GdkEventExpose *event)
     cairo_pattern_t *pat;
     CalfKeyboard *self = CALF_KEYBOARD(widget);
     GdkWindow *window = gtk_widget_get_window(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(window));
+    cairo_t *c = gdk_cairo_create(window);
     GtkAllocation allocation;
     gtk_widget_get_allocation(widget, &allocation);
     int sy = allocation.height - 1;

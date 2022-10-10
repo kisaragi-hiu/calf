@@ -149,7 +149,7 @@ calf_pattern_expose (GtkWidget *widget, GdkEventExpose *event)
 {
     g_assert(CALF_IS_PATTERN(widget));
     CalfPattern *p = CALF_PATTERN(widget);
-    cairo_t *c = gdk_cairo_create(GDK_DRAWABLE(gtk_widget_get_window(widget)));
+    cairo_t *c = gdk_cairo_create(gtk_widget_get_window(widget));
     if (p->force_redraw) {
         GtkAllocation allocation;
         gtk_widget_get_allocation(widget, &allocation);
